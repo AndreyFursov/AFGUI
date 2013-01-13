@@ -6,6 +6,8 @@
  */
 #include "gui.h"
 
+
+
 void guiDrawString(uint8_t * text, V_FONT *font, uint16_t len, uint16_t Xpos, uint16_t Ypos)
 {
 	uint32_t i, index;

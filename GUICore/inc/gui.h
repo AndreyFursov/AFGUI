@@ -19,12 +19,17 @@
 #define uint32_t 	unsigned int
 #endif
 
-// Core
-
 #include "guiColor.h"
 #include "guiFonts.h"
+
+// Driver
+#include "ads7843.h"
+#include "mkDriver.h"
 #include "lcdHAL.h"
-#include "driver.h"
+
+// Core
+#include "guiPrimitives.h"
+
 
 // Widgets
 #include "widget.h"
@@ -32,6 +37,7 @@
 #include "guiCheckBox.h"
 #include "guiLabel.h"
 #include "guiText.h"
+#include "guiChart.h"
 
 
 // Default

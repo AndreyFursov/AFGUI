@@ -1,87 +1,38 @@
 /*
  * lcdHAL.h
  *
- *  Created on: 18.12.2012
- *      Author: Andrey
+ *  Created on: 08.01.2013
+ *      Author: Andrey Fursov
  */
 
 #ifndef LCDHAL_H_
 #define LCDHAL_H_
 
-#include "gui.h"
+#define LCD_PIXEL_WIDTH		320
+#define LCD_PIXEL_HEIGHT	240
 
 
-// GPIO config
-// LCD reset
+//******************************************************************************************
+// Init
+extern void LCD_Init(void);
+
+//******************************************************************************************
+// Color function
+extern void LCD_SetColors(volatile uint16_t _TextColor, volatile uint16_t _BackColor);
+extern void LCD_GetColors(volatile uint16_t *_TextColor, volatile uint16_t *_BackColor);
+extern void LCD_SetTextColor(volatile uint16_t Color);
+extern void LCD_SetBackColor(volatile uint16_t Color);
+// Font functions
+extern void LCD_SetFont(V_FONT *fonts);
+extern V_FONT *LCD_GetFont(void);
 
 
-//*********************************************************************************
-// global extern
-
-typedef struct
-{
-	int16_t X;
-	int16_t Y;
-} Point, * pPoint;
-
-
-
-#define ASSEMBLE_RGB(R ,G, B)    ((((R)& 0xFC) << 8) | (((G) & 0xFC) << 2) | (((B) & 0xF0) >> 4))
-#define MAX_POLY_CORNERS   200
-
-
-typedef struct
-{
-	unsigned clRed		: 6;
-	unsigned clGreen	: 6;
-	unsigned clBlue		: 4;
-} RGB16;
-
-typedef struct
-{
-	unsigned clRed		: 6;
-	unsigned clGreen	: 6;
-	unsigned clBlue		: 6;
-} RGB32;
-
-
-//*****************************************************************************
-// PROTOTIPES
-
-
-
-// high level primitives
-
-
-//
-//extern void LCD_ClearLine(uint16_t Line);
-
-//extern void LCD_SetCursor(uint16_t Xpos, uint16_t Ypos);
-extern void LCD_SetDisplayWindow(uint16_t Xpos, uint16_t Ypos, uint16_t Height, uint16_t Width);
-extern void LCD_WindowModeDisable(void);
-extern void LCD_ASCII(V_FONT * vFont);
-
-//**************************************************************************
-extern void LCD_Clear(uint16_t Color);
-extern void LCD_DrawString(uint8_t * text, uint16_t len, uint16_t Xpos, uint16_t Ypos);
-extern void LCD_DrawLine(uint16_t Xpos, uint16_t Ypos, uint16_t Length, uint8_t Direction);
-extern void LCD_DrawRect(uint16_t Xpos, uint16_t Ypos, uint8_t Height, uint16_t Width);
-extern void LCD_DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius);
-extern void LCD_DrawFullCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius);
-extern void LCD_DrawQuadRound(uint16_t Xpos, uint16_t Ypos, uint16_t Radius, uint16_t Quadrant);
-extern void LCD_DrawRoundedRect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height, uint16_t LineWidth);
-extern void LCD_DrawUniLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
-extern void LCD_DrawFullRect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height);
-extern void LCD_PolyLine(pPoint Points, uint16_t PointCount);
-extern void LCD_PolyLineRelative(pPoint Points, uint16_t PointCount);
-extern void LCD_ClosedPolyLine(pPoint Points, uint16_t PointCount);
-extern void LCD_ClosedPolyLineRelative(pPoint Points, uint16_t PointCount);
-extern void LCD_FillPolyLine(pPoint Points, uint16_t PointCount);
-
-//**************************************************************************
-
-
-
-
+//******************************************************************************************
+// LowLevel Function
+extern void LCD_PutPixel(uint16_t x, uint16_t y);
+extern void LCD_DrawChar(uint16_t Xpos, uint16_t Ypos, uint16_t codeChar);
+extern void LCD_DrawFillRect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height);
+extern void LCD_DrawMonoPict(const uint32_t *Pict);
+extern void LCD_WriteBMP(uint32_t BmpAddress);
 
 #endif /* LCDHAL_H_ */

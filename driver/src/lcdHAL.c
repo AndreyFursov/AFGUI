@@ -1,527 +1,342 @@
 /*
  * lcdHAL.c
  *
- *  Created on: 03.01.2013
- *      Author: Andrey
+ *  Created on: 08.01.2013
+ *      Author: Andrey Fursov
  */
 
-
 #include "gui.h"
-#define POLY_Y(Z)          ((int32_t)((Points + Z)->X))
-#define POLY_X(Z)          ((int32_t)((Points + Z)->Y))
-
-#define ABS(X)  ((X) > 0 ? (X) : -(X))
-
-//V_FONT * LCD_Currentfonts;
-//volatile uint16_t TextColor;
-//volatile uint16_t BackColor;
 
 
+V_FONT * LCD_Currentfonts;
+volatile uint16_t TextColor;
+volatile uint16_t BackColor;
 
 
-//**************************************************************************************
-void LCD_Clear(uint16_t Color)
+//********************************************************
+// Functions
+//********************************************************
+
+//******************************************************************************
+// Color function
+void LCD_SetColors(volatile uint16_t _TextColor, volatile uint16_t _BackColor)
 {
-	LCD_SetTextColor(Color);
-	LCD_DrawFillRect(0, 0, LCD_PIXEL_WIDTH, LCD_PIXEL_HEIGHT);
+  TextColor = _TextColor;
+  BackColor = _BackColor;
 }
 
-//**************************************************************************************
-// Draw string
-void LCD_DrawString(uint8_t * text, uint16_t len, uint16_t Xpos, uint16_t Ypos)
+void LCD_GetColors(volatile uint16_t *_TextColor, volatile uint16_t *_BackColor)
 {
-	uint32_t i, index;
-	V_FONT * LCD_Currentfonts;
-	LCD_Currentfonts = LCD_GetFont();
-	for (i = 0; i < len; i++)
+  *_TextColor = TextColor; *_BackColor = BackColor;
+}
+
+void LCD_SetTextColor(volatile uint16_t Color)
+{
+  TextColor = Color;
+}
+
+void LCD_SetBackColor(volatile uint16_t Color)
+{
+  BackColor = Color;
+}
+
+//******************************************************************************
+// Font functions
+void LCD_SetFont(V_FONT *fonts)
+{
+  LCD_Currentfonts = fonts;
+}
+
+V_FONT *LCD_GetFont(void)
+{
+  return LCD_Currentfonts;
+}
+
+
+
+
+
+
+void LCD_SetWindow (uint16_t startx, uint16_t starty, uint16_t endx, uint16_t endy)
+{
+	if (startx > LCD_PIXEL_WIDTH-1 || endx > LCD_PIXEL_WIDTH-1
+		|| starty > LCD_PIXEL_HEIGHT-1 || endy > LCD_PIXEL_HEIGHT-1 )
 	{
-		index = text[i] - LCD_Currentfonts->Offset;
-		if (index > LCD_Currentfonts->NumSymb) index = 0x3F-32;
-		LCD_DrawChar(Xpos, Ypos, index);
-		if (LCD_Currentfonts->Width)
-			Xpos += LCD_Currentfonts->Width;
-		else
-			Xpos += (LCD_Currentfonts->tableSymbWidth[index]+LCD_Currentfonts->SymbolSpace);
+		startx = 0;
+		endx = 0;
+		starty = 0;
+		endy = 0;
 	}
+	LCD_WriteReg(0x0002,startx>>8);
+	LCD_WriteReg(0x0003,startx);
+	LCD_WriteReg(0x0004,endx>>8);
+	LCD_WriteReg(0x0005,endx);
+	LCD_WriteReg(0x0006,starty>>8);
+	LCD_WriteReg(0x0007,starty);
+	LCD_WriteReg(0x0008,endy>>8);
+	LCD_WriteReg(0x0009,endy);
 }
 
-//**************************************************************************************
-void LCD_DrawLine(uint16_t Xpos, uint16_t Ypos, uint16_t Length, uint8_t Direction)
+
+//********************************************************
+//********************************************************
+//********************************************************
+
+void LCD_PutPixel(uint16_t x, uint16_t y)
 {
-	uint16_t len = 1, height = 1;
-	if (Direction == LCD_DIR_HORIZONTAL)
+	LCD_SetWindow (x,y, x, y);
+	LCD_WriteRAM_Prepare();
+	LCD_WriteRAM(TextColor);
+	LCD_WriteRAM(0);
+}
+
+
+
+void LCD_DrawChar(uint16_t Xpos, uint16_t Ypos, uint16_t codeChar)
+{
+	uint32_t index = 0, i = 0, numByte, width, bitCounter, ptrByte;
+	// Symbol width
+	if (codeChar > LCD_Currentfonts->NumSymb) codeChar = 0;
+	if (LCD_Currentfonts->Width)
 	{
-		len = Length;
+		width = LCD_Currentfonts->Width;
+		LCD_SetWindow(Xpos, Ypos, Xpos+width, Ypos+LCD_Currentfonts->Height-1);
 	}
 	else
 	{
-		height = Length;
+		width = LCD_Currentfonts->tableSymbWidth[codeChar];
+		LCD_SetWindow(Xpos, Ypos, Xpos+width+LCD_Currentfonts->SymbolSpace-1, Ypos+LCD_Currentfonts->Height-1);
 	}
-	LCD_DrawFillRect(Xpos,Ypos,len, height);
-}
+	numByte = LCD_Currentfonts->Height * ((width+7)/8);
 
-//**************************************************************************************
-void LCD_DrawRect(uint16_t Xpos, uint16_t Ypos, uint8_t Height, uint16_t Width)
-{
-	LCD_DrawLine(Xpos, Ypos, 				Width, 	LCD_DIR_HORIZONTAL);
-	LCD_DrawLine(Xpos, (Ypos+Height-1), 	Width, LCD_DIR_HORIZONTAL);
-
-	LCD_DrawLine(Xpos, 			Ypos, 	Height, LCD_DIR_VERTICAL);
-	LCD_DrawLine((Xpos+Width-1), 	Ypos, 	Height, LCD_DIR_VERTICAL);
-}
-
-//**************************************************************************************
-// from http://en.wikipedia.org/wiki/Midpoint_circle_algorithm
-//In summary, when we compare the sum of N odd numbers to this algorithm we have:
-// ddF_y = -2 * radius       is connected to last member of sum of N odd numbers.
-//                           This member has index equal to value of radius (integral).
-//                           Since odd number is 2*n + 1 there is 1 handled elsewhere
-//                           or it should be -2*radius - 1
-// ddF_x = 0                 should be 1. Because difference between two consecutive odd numbers is 2.
-//                           If so f += ddF_y + 1 is f+= ddF_y. Saving one operation.
-// f = - radius + 1          Initial error equal to half of "bigger" step.
-//                           In case of saving one addition it should be either -radius or -radius + 2.
-// In any case there should be addition of 1 driven out of outer loop.
-// So.
-// f += ddF_y                Adding odd numbers from Nth to 1st.
-// f += ddF_x                Adding odd numbers from 1st to Nth. 1 is missing because it can be moved outside of loop.
-void LCD_DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t radius)
-{
-	int16_t f = 1 - radius;
-	int16_t ddF_x = 1;
-	int16_t ddF_y = -2 * radius;
-	int16_t x = 0;
-	int16_t y = radius;
-
-	LCD_PutPixel(Xpos, Ypos + radius);
-	LCD_PutPixel(Xpos, Ypos - radius);
-	LCD_PutPixel(Xpos + radius, Ypos);
-	LCD_PutPixel(Xpos - radius, Ypos);
-
-	while(x < y)
+	LCD_WriteRAM_Prepare(); /* Prepare to write GRAM */
+	// Draw Char
+	for(index = 0; index < numByte; index++)
 	{
-		// ddF_x == 2 * x + 1;
-		// ddF_y == -2 * y;
-		// f == x*x + y*y - radius*radius + 2*x - y + 1;
-		if(f >= 0)
+		bitCounter = 0;
+		for(i = 0; i < width; i++)
 		{
-			y--;
-			ddF_y += 2;
-			f += ddF_y;
-		}
-		x++;
-		ddF_x += 2;
-		f += ddF_x;
-		LCD_PutPixel(Xpos + x, Ypos + y);
-		LCD_PutPixel(Xpos - x, Ypos + y);
-		LCD_PutPixel(Xpos + x, Ypos - y);
-		LCD_PutPixel(Xpos - x, Ypos - y);
-		LCD_PutPixel(Xpos + y, Ypos + x);
-		LCD_PutPixel(Xpos - y, Ypos + x);
-		LCD_PutPixel(Xpos + y, Ypos - x);
-		LCD_PutPixel(Xpos - y, Ypos - x);
-	}
-}
 
-
-//**************************************************************************************
-void LCD_DrawFullRect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height)
-{
-	LCD_DrawLine(Xpos, 				Ypos,	Width,	LCD_DIR_HORIZONTAL);
-	LCD_DrawLine(Xpos, 	(Ypos+Height-1), 	Width,	LCD_DIR_HORIZONTAL);
-
-	LCD_DrawLine(Xpos, 				Ypos, 	Height, LCD_DIR_VERTICAL);
-	LCD_DrawLine((Xpos+Width-1), 	Ypos, 	Height, LCD_DIR_VERTICAL);
-
-	LCD_DrawFillRect(Xpos+1,Ypos+1, Width-2, Height-2);
-}
-
-//**************************************************************************************
-void LCD_DrawFullCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius)
-{
-	int32_t	D;		/* Decision Variable */
-	int32_t	CurX;/* Current X Value */
-	int32_t	CurY;/* Current Y Value */
-	uint16_t tempTextColor, tempBackColor;//, tempBackColor;
-	LCD_GetColors(&tempTextColor, &tempBackColor);
-	//tempBackColor = BackColor;
-
-	D = 3 - (Radius << 1);
-
-	CurX = 0;
-	CurY = Radius;
-
-	LCD_SetTextColor(tempBackColor);
-
-	while (CurX <= CurY)
-	{
-		if(CurY > 0)
-		{
-			LCD_DrawLine(Xpos - CurX, Ypos - CurY, 2*CurY, LCD_DIR_VERTICAL);
-			LCD_DrawLine(Xpos + CurX, Ypos - CurY, 2*CurY, LCD_DIR_VERTICAL);
-		}
-
-		if(CurX > 0)
-		{
-			LCD_DrawLine(Xpos - CurY, Ypos - CurX, 2*CurX, LCD_DIR_VERTICAL);
-			LCD_DrawLine(Xpos + CurY, Ypos - CurX, 2*CurX, LCD_DIR_VERTICAL);
-		}
-		if (D < 0)
-		{
-			D += (CurX << 2) + 6;
-		}
-		else
-		{
-			D += ((CurX - CurY) << 2) + 10;
-			CurY--;
-		}
-		CurX++;
-	}
-
-	LCD_SetTextColor(tempTextColor);
-	LCD_DrawCircle(Xpos, Ypos, Radius);
-}
-
-
-
-
-//**************************************************************************************
-void LCD_DrawUniLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
-{
-	int16_t deltax = 0, deltay = 0, x = 0, y = 0, xinc1 = 0, xinc2 = 0,
-	yinc1 = 0, yinc2 = 0, den = 0, num = 0, numadd = 0, numpixels = 0,
-	curpixel = 0;
-
-	deltax = ABS(x2 - x1);				/* The difference between the x's */
-	deltay = ABS(y2 - y1);				/* The difference between the y's */
-	x = x1;											 /* Start x off at the first pixel */
-	y = y1;											 /* Start y off at the first pixel */
-
-	if (x2 >= x1)								 /* The x-values are increasing */
-	{
-		xinc1 = 1;
-		xinc2 = 1;
-	}
-	else													/* The x-values are decreasing */
-	{
-		xinc1 = -1;
-		xinc2 = -1;
-	}
-
-	if (y2 >= y1)								 /* The y-values are increasing */
-	{
-		yinc1 = 1;
-		yinc2 = 1;
-	}
-	else													/* The y-values are decreasing */
-	{
-		yinc1 = -1;
-		yinc2 = -1;
-	}
-
-	if (deltax >= deltay)				 /* There is at least one x-value for every y-value */
-	{
-		xinc1 = 0;									/* Don't change the x when numerator >= denominator */
-		yinc2 = 0;									/* Don't change the y for every iteration */
-		den = deltax;
-		num = deltax / 2;
-		numadd = deltay;
-		numpixels = deltax;				 /* There are more x-values than y-values */
-	}
-	else													/* There is at least one y-value for every x-value */
-	{
-		xinc2 = 0;									/* Don't change the x for every iteration */
-		yinc1 = 0;									/* Don't change the y when numerator >= denominator */
-		den = deltay;
-		num = deltay / 2;
-		numadd = deltax;
-		numpixels = deltay;				 /* There are more y-values than x-values */
-	}
-
-	for (curpixel = 0; curpixel <= numpixels; curpixel++)
-	{
-		LCD_PutPixel(x, y);						 /* Draw the current pixel */
-		num += numadd;							/* Increase the numerator by the top of the fraction */
-		if (num >= den)						 /* Check if numerator >= denominator */
-		{
-			num -= den;							 /* Calculate the new numerator value */
-			x += xinc1;							 /* Change the x as appropriate */
-			y += yinc1;							 /* Change the y as appropriate */
-		}
-		x += xinc2;								 /* Change the x as appropriate */
-		y += yinc2;								 /* Change the y as appropriate */
-	}
-}
-
-//**************************************************************************************
-void LCD_PolyLine(pPoint Points, uint16_t PointCount)
-{
-	int16_t X = 0, Y = 0;
-
-	if(PointCount < 2)
-	{
-		return;
-	}
-
-	while(--PointCount)
-	{
-		X = Points->X;
-		Y = Points->Y;
-		Points++;
-		LCD_DrawUniLine(X, Y, Points->X, Points->Y);
-	}
-}
-
-//**************************************************************************************
-static void LCD_PolyLineRelativeClosed(pPoint Points, uint16_t PointCount, uint16_t Closed)
-{
-	int16_t X = 0, Y = 0;
-	pPoint First = Points;
-
-	if(PointCount < 2)
-	{
-		return;
-	}
-	X = Points->X;
-	Y = Points->Y;
-	while(--PointCount)
-	{
-		Points++;
-		LCD_DrawUniLine(X, Y, X + Points->X, Y + Points->Y);
-		X = X + Points->X;
-		Y = Y + Points->Y;
-	}
-	if(Closed)
-	{
-		LCD_DrawUniLine(First->X, First->Y, X, Y);
-	}
-}
-
-//**************************************************************************************
-void LCD_ClosedPolyLine(pPoint Points, uint16_t PointCount)
-{
-	LCD_PolyLine(Points, PointCount);
-	LCD_DrawUniLine(Points->X, Points->Y, (Points+PointCount-1)->X, (Points+PointCount-1)->Y);
-}
-
-//**************************************************************************************
-void LCD_PolyLineRelative(pPoint Points, uint16_t PointCount)
-{
-	LCD_PolyLineRelativeClosed(Points, PointCount, 0);
-}
-
-//**************************************************************************************
-void LCD_ClosedPolyLineRelative(pPoint Points, uint16_t PointCount)
-{
-	LCD_PolyLineRelativeClosed(Points, PointCount, 1);
-}
-
-//**************************************************************************************
-void LCD_FillPolyLine(pPoint Points, uint16_t PointCount)
-{
-	/*	public-domain code by Darel Rex Finley, 2007 */
-	uint16_t TextColor, BackColor;
-	uint16_t	nodes = 0, nodeX[MAX_POLY_CORNERS], pixelX = 0, pixelY = 0, i = 0,
-	j = 0, swap = 0;
-	uint16_t	IMAGE_LEFT = 0, IMAGE_RIGHT = 0, IMAGE_TOP = 0, IMAGE_BOTTOM = 0;
-
-	IMAGE_LEFT = IMAGE_RIGHT = Points->X;
-	IMAGE_TOP= IMAGE_BOTTOM = Points->Y;
-
-	LCD_GetColors(&TextColor, &BackColor);
-	for(i = 1; i < PointCount; i++)
-	{
-		pixelX = POLY_X(i);
-		if(pixelX < IMAGE_LEFT)
-		{
-			IMAGE_LEFT = pixelX;
-		}
-		if(pixelX > IMAGE_RIGHT)
-		{
-			IMAGE_RIGHT = pixelX;
-		}
-
-		pixelY = POLY_Y(i);
-		if(pixelY < IMAGE_TOP)
-		{
-			IMAGE_TOP = pixelY;
-		}
-		if(pixelY > IMAGE_BOTTOM)
-		{
-			IMAGE_BOTTOM = pixelY;
-		}
-	}
-
-	LCD_SetTextColor(BackColor);
-
-	/*	Loop through the rows of the image. */
-	for (pixelY = IMAGE_TOP; pixelY < IMAGE_BOTTOM; pixelY++)
-	{
-		/* Build a list of nodes. */
-		nodes = 0; j = PointCount-1;
-
-		for (i = 0; i < PointCount; i++)
-		{
-			if (((POLY_Y(i)<(double) pixelY) && (POLY_Y(j)>=(double) pixelY)) || \
-					((POLY_Y(j)<(double) pixelY) && (POLY_Y(i)>=(double) pixelY)))
+			if (bitCounter > 7)
 			{
-				nodeX[nodes++]=(int) (POLY_X(i)+((pixelY-POLY_Y(i))*(POLY_X(j)-POLY_X(i)))/(POLY_Y(j)-POLY_Y(i)));
+				bitCounter = 0;
+				index++;
 			}
-			j = i;
-		}
-
-		/* Sort the nodes, via a simple "Bubble" sort. */
-		i = 0;
-		while (i < nodes-1)
-		{
-			if (nodeX[i]>nodeX[i+1])
+			ptrByte = LCD_Currentfonts->table[LCD_Currentfonts->tableSymbIndex[codeChar]+index];
+			if(ptrByte & (1<<bitCounter))
 			{
-				swap = nodeX[i];
-				nodeX[i] = nodeX[i+1];
-				nodeX[i+1] = swap;
-				if(i)
-				{
-					i--;
-				}
+				LCD_WriteRAM(TextColor);
+				LCD_WriteRAM(0);
 			}
 			else
 			{
-				i++;
+				LCD_WriteRAM(BackColor);
+				LCD_WriteRAM(0);
 			}
+			bitCounter++;
 		}
-
-		/*	Fill the pixels between node pairs. */
-		for (i = 0; i < nodes; i+=2)
+		// Add space
+		for (i = 0; i < LCD_Currentfonts->SymbolSpace; i++)
 		{
-			if(nodeX[i] >= IMAGE_RIGHT)
-			{
-				break;
-			}
-			if(nodeX[i+1] > IMAGE_LEFT)
-			{
-				if (nodeX[i] < IMAGE_LEFT)
-				{
-					nodeX[i]=IMAGE_LEFT;
-				}
-				if(nodeX[i+1] > IMAGE_RIGHT)
-				{
-					nodeX[i+1] = IMAGE_RIGHT;
-				}
-				LCD_SetTextColor(BackColor);
-				LCD_DrawLine(pixelY, nodeX[i+1], nodeX[i+1] - nodeX[i], LCD_DIR_HORIZONTAL);
-				LCD_SetTextColor(TextColor);
-				LCD_PutPixel(pixelY, nodeX[i+1]);
-				LCD_PutPixel(pixelY, nodeX[i]);
-				/* for (j=nodeX[i]; j<nodeX[i+1]; j++) PutPixel(j,pixelY); */
-			}
+			LCD_WriteRAM(BackColor);
+			LCD_WriteRAM(0);
 		}
 	}
-
-	/* draw the edges */
-	LCD_SetTextColor(TextColor);
 }
 
-
-//**************************************************************************************
-void LCD_DrawRoundedRect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height, uint16_t LineWidth)
+void LCD_DrawFillRect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height)
 {
-//	uint32_t i, num;
-	uint16_t cxPos, cyPos;
-	cxPos = Xpos+Width-LineWidth-1;
-	cyPos = Ypos+LineWidth;
-	LCD_DrawQuadRound(cxPos, cyPos, LineWidth, 0);
-//	cxPos = Xpos+Width-LineWidth;
-	cyPos = Ypos+Height-LineWidth;
-	LCD_DrawQuadRound(cxPos, cyPos, LineWidth, 1);
-	cxPos = Xpos+LineWidth;
-//	cyPos = Ypos+Height-LineWidth;
-	LCD_DrawQuadRound(cxPos, cyPos, LineWidth, 2);
-//	cxPos = Xpos+LineWidth;
-	cyPos = Ypos+LineWidth;
-	LCD_DrawQuadRound(cxPos, cyPos, LineWidth, 3);
+	uint32_t i, num;
 
-	LCD_DrawFillRect(Xpos+LineWidth, 		Ypos, 						Width-LineWidth-LineWidth, LineWidth);
-	LCD_DrawFillRect(Xpos+LineWidth, 		Ypos+Height-LineWidth, 		Width-LineWidth-LineWidth, LineWidth);
-	LCD_DrawFillRect(Xpos, 					Ypos+LineWidth, LineWidth, 	Height-LineWidth-LineWidth);
-	LCD_DrawFillRect(Xpos+Width-LineWidth,	Ypos+LineWidth, LineWidth, 	Height-LineWidth-LineWidth);
+	LCD_SetWindow (Xpos,Ypos,Xpos+Width-1,Ypos+Height-1);
+	LCD_WriteRAM_Prepare();
 
-
-}
-
-
-
-
-//**************************************************************************************
-void LCD_DrawQuadRound(uint16_t Xpos, uint16_t Ypos, uint16_t Radius, uint16_t Quadrant)
-{
-	int32_t	D;		/* Decision Variable */
-	int32_t	CurX;/* Current X Value */
-	int32_t	CurY;/* Current Y Value */
-
-	D = 3 - (Radius << 1);
-	CurX = 0;
-	CurY = Radius;
-
-	while (CurX <= CurY)
+	num = Width*Height;
+	for(i = 0; i < num; i++)
 	{
-		if (Quadrant == 0)
-		{
-			if(CurY > 0)
-			{
-				LCD_DrawLine(Xpos + CurX, Ypos-CurY, CurY, LCD_DIR_VERTICAL);
-			}
-
-			if(CurX > 0)
-			{
-				LCD_DrawLine(Xpos + CurY, Ypos-CurX, CurX, LCD_DIR_VERTICAL);
-			}
-		}
-		if (Quadrant == 1)
-		{
-			if(CurY > 0)
-			{
-				LCD_DrawLine(Xpos + CurX, Ypos, CurY, LCD_DIR_VERTICAL);
-			}
-
-			if(CurX > 0)
-			{
-				LCD_DrawLine(Xpos + CurY, Ypos, CurX, LCD_DIR_VERTICAL);
-			}
-		}
-		if (Quadrant == 2)
-		{
-			if(CurY > 0)
-			{
-				LCD_DrawLine(Xpos - CurX, Ypos, CurY, LCD_DIR_VERTICAL);
-			}
-
-			if(CurX > 0)
-			{
-				LCD_DrawLine(Xpos - CurY, Ypos, CurX, LCD_DIR_VERTICAL);
-			}
-		}
-		if (Quadrant == 3)
-		{
-			if(CurY > 0)
-			{
-				LCD_DrawLine(Xpos - CurX, Ypos-CurY, CurY, LCD_DIR_VERTICAL);
-			}
-
-			if(CurX > 0)
-			{
-				LCD_DrawLine(Xpos - CurY, Ypos - CurX, CurX, LCD_DIR_VERTICAL);
-			}
-		}
-
-		if (D < 0)
-		{
-			D += (CurX << 2) + 6;
-		}
-		else
-		{
-			D += ((CurX - CurY) << 2) + 10;
-			CurY--;
-		}
-		CurX++;
+		LCD_WriteRAM(TextColor);
+		LCD_WriteRAM(0);
 	}
+}
+
+
+void LCD_DrawMonoPict(const uint32_t *Pict)
+{
+	uint32_t index = 0, i = 0;
+	//LCD_SetCursor(0, 0);
+
+	LCD_WriteRAM_Prepare(); /* Prepare to write GRAM */
+	for(index = 0; index < 2400; index++)
+	{
+		for(i = 0; i < 32; i++)
+		{
+			if((Pict[index] & (1 << i)) == 0x00)
+			{
+				LCD_WriteRAM(BackColor);
+				LCD_WriteRAM(0);
+			}
+			else
+			{
+				LCD_WriteRAM(TextColor);
+				LCD_WriteRAM(0);
+			}
+		}
+	}
+}
+
+void LCD_WriteBMP(uint32_t BmpAddress)
+{
+	uint32_t index = 0, size = 0;
+	/* Read bitmap size */
+	size = *(volatile uint16_t *) (BmpAddress + 2);
+	size |= (*(volatile uint16_t *) (BmpAddress + 4)) << 16;
+	/* Get bitmap data address offset */
+	index = *(volatile uint16_t *) (BmpAddress + 10);
+	index |= (*(volatile uint16_t *) (BmpAddress + 12)) << 16;
+	size = (size - index)/2;
+	BmpAddress += index;
+	/* Set GRAM write direction and BGR = 1 */
+	/* I/D=00 (Horizontal : decrement, Vertical : decrement) */
+	/* AM=1 (address is updated in vertical writing direction) */
+	//LCD_WriteReg(LCD_REG_3, 0x1008);
+
+	LCD_WriteRAM_Prepare();
+
+	for(index = 0; index < size; index++)
+	{
+		LCD_WriteRAM(*(volatile uint16_t *)BmpAddress);
+		LCD_WriteRAM(0);
+		BmpAddress += 2;
+	}
+
+	/* Set GRAM write direction and BGR = 1 */
+	/* I/D = 01 (Horizontal : increment, Vertical : decrement) */
+	/* AM = 1 (address is updated in vertical writing direction) */
+	//LCD_WriteReg(LCD_REG_3, 0x1018);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+//********************************************************
+
+
+//********************************************************
+// LCD DEM240320H_TMH-PW-N (A-TOUCH) HX8347A initialization
+//********************************************************
+
+//********************************************************
+
+void LCD_Init(void)
+{
+	volatile uint32_t lcdid = 0;
+
+//	uint32_t i;
+	uint16_t regValue;
+	regValue = 0xA8;
+	LCD_CtrlLinesConfig();
+	LCD_FSMCConfig();
+
+    LCD_Reset_Off();
+    guiDelay_ms(10);
+    LCD_Reset_On();
+    guiDelay_ms(10);
+    LCD_Reset_Off();
+    guiDelay_ms(250);
+
+	// Gamms set
+	LCD_WriteReg(0x0046,0x0095);
+	LCD_WriteReg(0x0047,0x0051);
+	LCD_WriteReg(0x0048,0x0000);
+	LCD_WriteReg(0x0049,0x0036);
+	LCD_WriteReg(0x004A,0x0011);
+	LCD_WriteReg(0x004B,0x0066);
+	LCD_WriteReg(0x004C,0x0014);
+	LCD_WriteReg(0x004D,0x0077);
+	LCD_WriteReg(0x004E,0x0013);
+	LCD_WriteReg(0x004F,0x004C);
+	LCD_WriteReg(0x0050,0x0046);
+	LCD_WriteReg(0x0051,0x0046);
+
+	// 240x320 Window setting
+	LCD_WriteReg(0x0002,0x0000);
+	LCD_WriteReg(0x0003,0x0000);
+	LCD_WriteReg(0x0004,0x0000);
+	LCD_WriteReg(0x0005,0x00EF);
+	LCD_WriteReg(0x0006,0x0000);
+	LCD_WriteReg(0x0007,0x0000);
+	LCD_WriteReg(0x0008,0x0001);
+	LCD_WriteReg(0x0009,0x003F);
+	LCD_WriteReg(0x0090,0x007F);
+
+	// Display setting
+	LCD_WriteReg(0x0001,0x0006);
+	LCD_WriteReg(0x0016,regValue);
+	LCD_WriteReg(0x0023,0x0095);
+	LCD_WriteReg(0x0024,0x0095);
+	LCD_WriteReg(0x0025,0x00FF);
+	LCD_WriteReg(0x0027,0x0006);
+	LCD_WriteReg(0x0028,0x0006);
+	LCD_WriteReg(0x0029,0x0006);
+	LCD_WriteReg(0x002A,0x0006);
+	LCD_WriteReg(0x002C,0x0006);
+	LCD_WriteReg(0x002D,0x0006);
+	LCD_WriteReg(0x003A,0x0001);
+	LCD_WriteReg(0x003B,0x0001);
+	LCD_WriteReg(0x003C,0x00F0);
+	LCD_WriteReg(0x003D,0x0000);
+	guiDelay_ms(100);
+	LCD_WriteReg(0x0010,0x00A6);
+
+	// Power Supply Setting
+	LCD_WriteReg(0x0019,0x0049);
+	guiDelay_ms(100);
+	LCD_WriteReg(0x0093,0x000C);
+	guiDelay_ms(200);
+	LCD_WriteReg(0x0020,0x0040);
+	LCD_WriteReg(0x001D,0x0007);
+	LCD_WriteReg(0x001E,0x0000);
+	LCD_WriteReg(0x001F,0x0004);
+	LCD_WriteReg(0x0044,0x004D);
+	LCD_WriteReg(0x0045,0x0011);
+	guiDelay_ms(200);
+	LCD_WriteReg(0x001C,0x0004);
+	guiDelay_ms(200);
+	LCD_WriteReg(0x0043,0x0080);
+	guiDelay_ms(100);
+	LCD_WriteReg(0x001B,0x0018);
+	guiDelay_ms(200);
+	LCD_WriteReg(0x001B,0x0010);
+	guiDelay_ms(200);
+
+	// Display On setting
+	LCD_WriteReg(0x0026,0x0004);
+	guiDelay_ms(200);
+	LCD_WriteReg(0x0026,0x0024);
+	guiDelay_ms(40);
+	LCD_WriteReg(0x0026,0x002C);
+	guiDelay_ms(200);
+	LCD_WriteReg(0x0026,0x003C);
+	LCD_WriteReg(0x0035,0x0038);
+	LCD_WriteReg(0x0036,0x0078);
+	LCD_WriteReg(0x003E,0x0038);
+	LCD_WriteReg(0x0040,0x000F);
+	LCD_WriteReg(0x0041,0x00F0);
+
+	// Set Spulse Rpulse
+	LCD_WriteReg(0x0057,0x0002);
+	LCD_WriteReg(0x0056,0x0084);
+	LCD_WriteReg(0x0057,0x0000);
+
+	LCD_Clear(LCD_COLOR_GREYL);
+	LCD_SetFont(&LCD_DEFAULT_FONT);
 }

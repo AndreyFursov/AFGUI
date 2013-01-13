@@ -23,6 +23,7 @@ typedef struct
 
 	unsigned 	Visible			: 1;
 	unsigned 	Enable			: 1;
+	unsigned	Selected		: 1;
 
 } WM_OBJ;
 

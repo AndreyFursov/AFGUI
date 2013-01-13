@@ -152,8 +152,8 @@ void wmTouchControl(WM_OBJ *wmObj, WM_TOUCH *wmTouch, uint16_t x, uint16_t y)
 
 	if (wmObj->Visible && wmObj->Enable)
 	{
-		if (x > wmObj->xPos
-				&& x < wmObj->xPos + wmObj->Width
+		if (	x < wmObj->xPos + wmObj->Width
+				&& x > wmObj->xPos
 				&& y > wmObj->yPos
 				&& y < wmObj->yPos + wmObj->Height
 				)

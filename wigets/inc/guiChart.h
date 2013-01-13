@@ -17,17 +17,20 @@ typedef struct
 	WM_TEXT		wmTxt;
 	WM_TOUCH 	wmTouch;
 
-	unsigned 	Dot	: 1;	// Dot/Line
-	uint16_t *	table;
-	uint16_t *	chartWidth;
-	uint16_t *	chartHeight;
+	uint8_t		table[320];
+	int16_t 	numPoint;
+	uint16_t 	xGridSpace;
+	uint16_t 	yGridSpace;
 
+	uint16_t 	LineColor;
+
+	unsigned 	Dot_nLine	: 1;	// Dot/Line
 
 
 } GUI_CHART;
 
 extern void defaultChartInit(GUI_CHART * chart, uint16_t x, uint16_t y, uint16_t width, uint16_t height);
-extern void ChartTextInit(GUI_CHART * chart, uint8_t *text, V_FONT * vFont, uint8_t rot, uint8_t flip, uint8_t align_h, uint8_t align_v);
+extern void chartSetData(GUI_CHART * chart, int16_t * data, uint16_t numData);
 extern void guiChartDraw(GUI_CHART * chart);
 
 
