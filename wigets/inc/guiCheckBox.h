@@ -23,7 +23,7 @@ typedef struct
 } GUI_CHECK_BOX;
 
 extern void defaultCheckInit(GUI_CHECK_BOX * checkBox, uint16_t x, uint16_t y, uint16_t width, uint16_t height);
-extern void CheckBoxTextInit(GUI_CHECK_BOX * checkBox, uint8_t *text, V_FONT * vFont, uint8_t rot, uint8_t flip, uint8_t align_h, uint8_t align_v);
+extern void CheckBoxTextInit(GUI_CHECK_BOX * checkBox, char *text, V_FONT * vFont, uint8_t rot, uint8_t flip, uint8_t align_h, uint8_t align_v);
 extern void CheckBoxDraw(GUI_CHECK_BOX * checkBox);
 
 

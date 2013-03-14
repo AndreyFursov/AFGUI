@@ -32,9 +32,12 @@ typedef struct
 
 extern V_FONT GL_ArialBold_16;
 extern V_FONT GL_ArialNarrow_15;
+extern V_FONT GL_ArialNarrow_21;
 extern V_FONT GL_ArialBold_24;
 extern V_FONT GL_ArialBold_64;
 extern V_FONT GL_Arial_12;
-
+extern V_FONT GL_Arial_11;
+extern V_FONT GL_Lucida_8;
+extern V_FONT GL_Calibri_10;
 
 #endif /* GUIFONTS_H_ */

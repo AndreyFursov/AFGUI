@@ -101,6 +101,10 @@ void LCD_WriteRAM(uint16_t RGB_Code)
   LCD->LCD_RAM = RGB_Code;
 }
 
+/**
+@function LCD_ReadRAM
+@return ¬озвращает содержимое пам€ти в регистре 0x22
+*/
 uint16_t LCD_ReadRAM(void)
 {
   /* Write 16-bit Index (then Read Reg) */

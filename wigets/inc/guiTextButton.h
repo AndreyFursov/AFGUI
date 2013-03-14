@@ -20,8 +20,8 @@ typedef struct
 } TEXT_BUTTON;
 
 extern void defaultTextButtonInit(TEXT_BUTTON * button, uint16_t x, uint16_t y, uint16_t width, uint16_t height);
-extern void ButtonTextInit(TEXT_BUTTON * button, uint8_t *text, V_FONT * vFont, uint8_t rot, uint8_t flip, uint8_t align_h, uint8_t align_v);
+extern void ButtonTextInit(TEXT_BUTTON * button, char *text, V_FONT * vFont, uint8_t rot, uint8_t flip, uint8_t align_h, uint8_t align_v);
 extern void TextButtonDraw(TEXT_BUTTON * button);
-
+extern void TextButtonStateRefresh(TEXT_BUTTON * button);
 
 #endif /* GUITEXTBUTTON_H_ */

@@ -29,6 +29,7 @@
 
 // Core
 #include "guiPrimitives.h"
+#include "afTime.h"
 
 
 // Widgets

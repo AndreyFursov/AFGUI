@@ -38,7 +38,7 @@ void wmObjInit(WM_OBJ * wm, uint16_t x, uint16_t y, uint16_t width, uint16_t hei
 
 
 //******************************************************************************************
-void wmTextInit(WM_TEXT * wmText, uint8_t *text, V_FONT * vFont, uint8_t rot, uint8_t flip, uint8_t align_h, uint8_t align_v)
+void wmTextInit(WM_TEXT * wmText, char *text, V_FONT * vFont, uint8_t rot, uint8_t flip, uint8_t align_h, uint8_t align_v)
 {
 	//uint16_t xPosText, yPosText, i;
 
@@ -53,11 +53,20 @@ void wmTextInit(WM_TEXT * wmText, uint8_t *text, V_FONT * vFont, uint8_t rot, ui
 	wmText->TextFlip		= flip;
 	wmText->TextLen = 0;
 	wmText->vFont = vFont;
-
-
 }
 
 
+
+//******************************************************************************************
+void wmObjTextInit(WM_OBJ *wmObj,  WM_TEXT * wmText)
+{
+	wmTextPositionInit(wmText,
+						wmObj->xPos + wmObj->BorderWidth + 1,
+						wmObj->yPos + wmObj->BorderWidth,
+						wmObj->Width - 2*wmObj->BorderWidth - 2,
+						wmObj->Height - 2*wmObj->BorderWidth
+						);
+}
 
 
 //******************************************************************************************
@@ -75,7 +84,6 @@ void wmTextPositionInit(WM_TEXT *wmText, uint16_t xPos, uint16_t yPos, uint16_t 
 void wmGetTextLenWidth(WM_TEXT *wmText, uint16_t width, uint16_t len)
 {
 	uint32_t textLength = 0, textWidth = 0, symbCode;
-
 	if (wmText->vFont->Width > 0)
 	{
 		// monospace font
@@ -91,15 +99,19 @@ void wmGetTextLenWidth(WM_TEXT *wmText, uint16_t width, uint16_t len)
 	else
 	{
 		// proportional font
-		symbCode = wmText->Text[textLength] - wmText->vFont->Offset;
+		symbCode = (uint8_t)wmText->Text[textLength] - wmText->vFont->Offset;
 		while (wmText->Text[textLength]
 			&& textLength < len
-			&& (textWidth + wmText->vFont->tableSymbWidth[symbCode]+1) < width
+			&& (textWidth + wmText->vFont->tableSymbWidth[symbCode]) < width
+			&& symbCode < wmText->vFont->NumSymb
 			)
 		{
-			symbCode = wmText->Text[textLength] - wmText->vFont->Offset;
-			textWidth += (wmText->vFont->tableSymbWidth[symbCode]+1);
-			textLength++;
+			if (symbCode < wmText->vFont->NumSymb)
+			{
+				textWidth += (wmText->vFont->tableSymbWidth[symbCode]+wmText->vFont->SymbolSpace);
+				textLength++;
+			}
+			symbCode = (uint8_t)wmText->Text[textLength] - wmText->vFont->Offset;
 		}
 	}
 	wmText->TextLen = textLength;
@@ -145,6 +157,17 @@ void wmGetTextPosition(WM_TEXT *wmText, uint16_t xPos, uint16_t yPos, uint16_t w
 
 }
 
+void wmTouchInit( WM_TOUCH *wmTouch)
+{
+	wmTouch->Jitter = 0;
+	wmTouch->Pressed = 0;			 	// Нажата
+	wmTouch->JustPressed = 0;		 	// Нажата только что (сбрасывается вручную)
+	wmTouch->Hold = 0;					// Не удерживается
+	wmTouch->Short = 0;			   		// Не короткое нажатие
+	wmTouch->HoldCounter = 0;
+	wmTouch->Changed = 0;
+	wmTouch->JustReleased = 0;
+}
 
 void wmTouchControl(WM_OBJ *wmObj, WM_TOUCH *wmTouch, uint16_t x, uint16_t y)
 {
@@ -176,6 +199,7 @@ void wmTouchControl(WM_OBJ *wmObj, WM_TOUCH *wmTouch, uint16_t x, uint16_t y)
 				wmTouch->Hold = 0;					// Не удерживается
 				wmTouch->Short = 0;			   		// Не короткое нажатие
 				wmTouch->HoldCounter = 0;
+				wmTouch->Changed = 1;
 			}   // if jitter
 		}
 		else
@@ -195,8 +219,10 @@ void wmTouchControl(WM_OBJ *wmObj, WM_TOUCH *wmTouch, uint16_t x, uint16_t y)
 				if (!wmTouch->Hold)			   	// Если не было удерживаниядольше 1 сек,
 					wmTouch->Short = 1;		   	// то установить флаг "короткого нажатия"
 
+				wmTouch->JustReleased = 1;		 	// Нажата только что (сбрасывается вручную)
 				wmTouch->Hold = 0;
 				wmTouch->HoldCounter = 0;
+				wmTouch->Changed = 1;
 
 			}   // if jitter
 

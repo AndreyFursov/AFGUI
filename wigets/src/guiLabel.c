@@ -12,6 +12,7 @@ void labelInit(GUI_LABEL * label, uint16_t x, uint16_t y, uint16_t width, uint16
 	label->wmObj.Color = LCD_COLOR_GREYL;
 	label->wmObj.BorderColor = label->wmObj.Color;
 	label->wmObj.BorderWidth = 0;
+	label->wmObj.Transparent = 1;
 }
 
 //void labelTextInit()
@@ -34,12 +35,15 @@ void guiLabelDraw(GUI_LABEL * label)
 			LCD_DrawFillRect(label->wmObj.xPos+label->wmObj.Width-label->wmObj.BorderWidth, label->wmObj.yPos, label->wmObj.BorderWidth, label->wmObj.Height);
 		}
 		// Back
-		LCD_SetTextColor(label->wmObj.Color);
-		LCD_DrawFillRect(label->wmObj.xPos + label->wmObj.BorderWidth,
-						label->wmObj.yPos + label->wmObj.BorderWidth,
-						label->wmObj.Width - 2*label->wmObj.BorderWidth,
-						label->wmObj.Height - 2*label->wmObj.BorderWidth
-						);
+		if (label->wmObj.Transparent == 0)
+		{
+			LCD_SetTextColor(label->wmObj.Color);
+			LCD_DrawFillRect(label->wmObj.xPos + label->wmObj.BorderWidth,
+							label->wmObj.yPos + label->wmObj.BorderWidth,
+							label->wmObj.Width - 2*label->wmObj.BorderWidth,
+							label->wmObj.Height - 2*label->wmObj.BorderWidth
+							);
+		}
 		// Text
 		LCD_SetFont(label->wmTxt.vFont);
 		if (label->wmObj.Enable)

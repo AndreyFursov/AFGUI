@@ -64,7 +64,7 @@ extern void LCD_ASCII(V_FONT * vFont);
 //**************************************************************************
 extern void LCD_DrawTransparentChar(uint16_t Xpos, uint16_t Ypos, uint16_t codeChar);
 extern void LCD_Clear(uint16_t Color);
-extern void LCD_DrawString(uint8_t * text, uint16_t len, uint16_t Xpos, uint16_t Ypos);
+extern void LCD_DrawString(char * text, uint16_t len, uint16_t Xpos, uint16_t Ypos);
 extern void LCD_DrawLine(uint16_t Xpos, uint16_t Ypos, uint16_t Length, uint8_t Direction);
 extern void LCD_DrawRect(uint16_t Xpos, uint16_t Ypos, uint8_t Height, uint16_t Width);
 extern void LCD_DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius);

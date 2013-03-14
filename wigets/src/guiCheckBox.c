@@ -26,7 +26,7 @@ void defaultCheckInit(GUI_CHECK_BOX * checkBox, uint16_t x, uint16_t y, uint16_t
 	checkBox->Checked			= 0;
 };
 
-void CheckBoxTextInit(GUI_CHECK_BOX * checkBox, uint8_t *text, V_FONT * vFont, uint8_t rot, uint8_t flip, uint8_t align_h, uint8_t align_v)
+void CheckBoxTextInit(GUI_CHECK_BOX * checkBox, char *text, V_FONT * vFont, uint8_t rot, uint8_t flip, uint8_t align_h, uint8_t align_v)
 {
 	checkBox->wmTxt.TextColor = LCD_COLOR_BLACK;
 	wmTextInit(&checkBox->wmTxt, text, vFont, rot, flip, align_h, align_v);

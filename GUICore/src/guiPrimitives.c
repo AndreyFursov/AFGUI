@@ -70,20 +70,23 @@ void LCD_DrawTransparentChar(uint16_t Xpos, uint16_t Ypos, uint16_t codeChar)
 
 //**************************************************************************************
 // Draw string
-void LCD_DrawString(uint8_t * text, uint16_t len, uint16_t Xpos, uint16_t Ypos)
+void LCD_DrawString(char * text, uint16_t len, uint16_t Xpos, uint16_t Ypos)
 {
 	uint32_t i, index;
 	V_FONT * LCD_Currentfonts;
 	LCD_Currentfonts = LCD_GetFont();
-	for (i = 0; i < len; i++)
+	i = 0;
+	while (i < len
+			&& (uint8_t)text[i] >= LCD_Currentfonts->Offset)
 	{
-		index = text[i] - LCD_Currentfonts->Offset;
+		index = (uint8_t)text[i] - LCD_Currentfonts->Offset;
 		if (index > LCD_Currentfonts->NumSymb) index = 0x3F-32;
 		LCD_DrawChar(Xpos, Ypos, index);
 		if (LCD_Currentfonts->Width)
 			Xpos += LCD_Currentfonts->Width;
 		else
 			Xpos += (LCD_Currentfonts->tableSymbWidth[index]+LCD_Currentfonts->SymbolSpace);
+		i++;
 	}
 }
 
