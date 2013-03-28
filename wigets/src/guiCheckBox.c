@@ -101,3 +101,41 @@ void CheckBoxDraw(GUI_CHECK_BOX * checkBox)
 		LCD_DrawString(checkBox->wmTxt.Text, checkBox->wmTxt.TextLen, checkBox->wmTxt.TextPosX, checkBox->wmTxt.TextPosY);
 	}
 }
+
+void CheckBoxStateRefresh(GUI_CHECK_BOX * checkBox)
+{
+	if (checkBox->wmObj.Visible)
+	{
+		// Center
+		if (checkBox->wmObj.Enable)
+			LCD_SetTextColor(LCD_COLOR_WHITE);
+		else
+			LCD_SetTextColor(LCD_COLOR_GREYL);
+		LCD_DrawFillRect(checkBox->wmObj.xPos+2,checkBox->wmObj.yPos+2,checkBox->wmObj.Height-4,checkBox->wmObj.Height-4);
+		if (checkBox->Checked)
+		{
+			if (checkBox->wmObj.Enable)
+				LCD_SetTextColor(LCD_COLOR_BLACK);
+			else
+				LCD_SetTextColor(LCD_COLOR_GREYD);
+			LCD_DrawFillRect(checkBox->wmObj.xPos+4,checkBox->wmObj.yPos+4,checkBox->wmObj.Height-8,checkBox->wmObj.Height-8);
+		}
+	}
+}
+
+void CheckBoxTouchControl(GUI_CHECK_BOX * checkBox, int16_t xTouch, int16_t yTouch)
+{
+	if (checkBox->wmObj.Enable)
+	{
+		wmTouchControl(&checkBox->wmObj, &checkBox->wmTouch, xTouch, yTouch);
+		if (checkBox->wmTouch.JustReleased)
+		{
+			checkBox->wmTouch.JustReleased = 0;
+			if (checkBox->Checked)
+				checkBox->Checked = 0;
+			else
+				checkBox->Checked = 1;
+			CheckBoxStateRefresh(checkBox);
+		}
+	}
+}

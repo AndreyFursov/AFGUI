@@ -26,6 +26,7 @@
 #include "ads7843.h"
 #include "mkDriver.h"
 #include "lcdHAL.h"
+#include "beeper.h"
 
 // Core
 #include "guiPrimitives.h"
@@ -39,7 +40,8 @@
 #include "guiLabel.h"
 #include "guiText.h"
 #include "guiChart.h"
-
+#include "guiUpDownBox.h"
+#include "guiRadioGroup.h"
 
 // Default
 #define LCD_DEFAULT_FONT GL_ArialBold_16

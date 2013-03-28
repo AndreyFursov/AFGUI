@@ -26,6 +26,8 @@ typedef struct
 	unsigned 	Enable			: 1;	//!< Enable control object
 	unsigned	Transparent		: 1;	//!< Transparent object
 	unsigned	Selected		: 1;	//!< Object selected (for button etc.)
+	unsigned	Visual3D		: 1;	//!<
+
 
 } WM_OBJ;
 

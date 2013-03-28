@@ -196,6 +196,7 @@ void wmTouchControl(WM_OBJ *wmObj, WM_TOUCH *wmTouch, uint16_t x, uint16_t y)
 			{
 				wmTouch->Pressed = 1;			 	// Нажата
 				wmTouch->JustPressed = 1;		 	// Нажата только что (сбрасывается вручную)
+				Beeper_ShortOn(50);
 				wmTouch->Hold = 0;					// Не удерживается
 				wmTouch->Short = 0;			   		// Не короткое нажатие
 				wmTouch->HoldCounter = 0;

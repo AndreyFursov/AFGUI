@@ -60,6 +60,19 @@ ver 0.0.002
 - bugfixed
 - add fonts
 
+ver 0.0.003
+- add file LICENCE.TXT for BSD-3
+- for wmObj add property Visual3D
+- add 3D drawing for GUI_LABEL
+- add widget GUI_UPDOWN_BOX. used widgets GUI_LABEL and TEXT_BUTTON
+- add methods CheckBoxTouchControl and CheckBoxStateRefresh for GUI_CHECK_BOX
+- add widget GUI_RADIO_GROUP
+- add driver for beeper
+
+do it
+- round for RADIO GROUP
+- (*) for TEST_BUTTON
+
 
 
 */

@@ -78,6 +78,47 @@ uint32_t int16toString(char * str, int16_t value, uint16_t len, uint8_t format)
 	return (uint32_t)index;
 }
 
+uint32_t int32toString(
+						char * str,			//!< Pointer to output string
+						int32_t value, 		//!< Input value
+						uint16_t len, 		//!< String length limit
+						uint8_t format		//!< Minimum num digit
+						)
+{
+	uint32_t temp, index, bin, flag;
+	uint8_t count;
+
+	index = 0;
+	flag = 0;
+	if (value < 0)
+	{
+		str[index++] = '-';
+		value = -value;
+	}
+	temp = 1000000000;
+	count = 0;
+	while (index < (len-1) && temp > 0)
+	{
+		bin = 0;
+		if (format)
+		{
+			count++;
+			if (10-count < format) flag = 1;
+		}
+		while (value >= temp)
+		{
+			flag = 1;
+			value -= temp;
+			bin++;
+		}
+		if (flag || (temp == 1))
+			str[index++] = bin + 0x30;
+		temp /= 10;
+	}
+	str[index] = 0;
+	return index;
+}
+
 uint32_t uint32toString(char * str, uint32_t value, uint16_t len, uint8_t format)
 {
 	uint32_t temp, index, bin, flag;
