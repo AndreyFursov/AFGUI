@@ -15,7 +15,6 @@ void defaultCheckInit(GUI_CHECK_BOX * checkBox, uint16_t x, uint16_t y, uint16_t
 	checkBox->wmObj.Width 		= width;
 	checkBox->wmObj.Height 		= height;
 
-
 	checkBox->wmObj.Color 		= LCD_COLOR_WHITE;
 
 	checkBox->wmObj.BorderColor = LCD_COLOR_GREYL;
@@ -41,16 +40,17 @@ void CheckBoxTextInit(GUI_CHECK_BOX * checkBox, char *text, V_FONT * vFont, uint
 
 void CheckBoxDraw(GUI_CHECK_BOX * checkBox)
 {
-	uint16_t  colorLight, colorDark;
+//	uint16_t  colorLight, colorDark;
 
 	if (checkBox->wmObj.Visible)
 	{
-		colorLight = guiChangeColorLight(checkBox->wmObj.BorderColor, 150);
-		colorDark = guiChangeColorLight(checkBox->wmObj.BorderColor, 50);
+		//colorLight = guiChangeColorLight(checkBox->wmObj.BorderColor, 150);
+		//colorDark = guiChangeColorLight(checkBox->wmObj.BorderColor, 50);
 
 		// check symbol
 		// Top-Left Border
-		LCD_SetTextColor(colorDark);
+		//LCD_SetTextColor(colorDark);
+		LCD_SetTextColor(LCD_COLOR_GREYD);
 		LCD_DrawLine(checkBox->wmObj.xPos, checkBox->wmObj.yPos, checkBox->wmObj.Height, LCD_DIR_HORIZONTAL);
 		LCD_DrawLine(checkBox->wmObj.xPos, checkBox->wmObj.yPos+1, checkBox->wmObj.Height-1, LCD_DIR_HORIZONTAL);
 		LCD_DrawLine(checkBox->wmObj.xPos, checkBox->wmObj.yPos, checkBox->wmObj.Height, LCD_DIR_VERTICAL);
@@ -58,7 +58,8 @@ void CheckBoxDraw(GUI_CHECK_BOX * checkBox)
 
 
 		// Bot-Right Dark Border
-		LCD_SetTextColor(colorLight);
+		//LCD_SetTextColor(colorLight);
+		LCD_SetTextColor(LCD_COLOR_WHITE);
 		LCD_DrawLine(checkBox->wmObj.xPos+1, checkBox->wmObj.yPos+checkBox->wmObj.Height-1, checkBox->wmObj.Height-1, LCD_DIR_HORIZONTAL);
 		LCD_DrawLine(checkBox->wmObj.xPos+checkBox->wmObj.Height-1, checkBox->wmObj.yPos+1, checkBox->wmObj.Height-1, LCD_DIR_VERTICAL);
 		LCD_SetTextColor(checkBox->wmObj.BorderColor);

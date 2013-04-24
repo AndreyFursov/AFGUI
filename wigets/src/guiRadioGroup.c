@@ -93,9 +93,11 @@ void RadioGroupItemInit(GUI_RADIO_GROUP * radioGroup, char *text, V_FONT * vFont
 
 void RadioGroupDraw(GUI_RADIO_GROUP * radioGroup)
 {
-	uint16_t i;
+	uint16_t i, xCenter, yCenter;
 	if (radioGroup->wmObj.Visible)
 	{
+
+
 
 		// check symbol
 		// top left bot right
@@ -122,40 +124,31 @@ void RadioGroupDraw(GUI_RADIO_GROUP * radioGroup)
 
 
 
+		xCenter = radioGroup->Item[0].wmObj.xPos + 7;
 
 		// Items text
 		for (i = 0; i < radioGroup->NumItem; i++)
 		{
 			// check symbol
+			// radio symbol
+			yCenter = radioGroup->Item[i].wmObj.yPos + radioGroup->Item[i].wmObj.Height/2;
 
-			// Top-Left Border
-			LCD_SetTextColor(LCD_COLOR_GREYD);
-			LCD_DrawLine(radioGroup->Item[i].wmObj.xPos, radioGroup->Item[i].wmObj.yPos, 15, LCD_DIR_HORIZONTAL);
-			LCD_DrawLine(radioGroup->Item[i].wmObj.xPos, radioGroup->Item[i].wmObj.yPos+1, 15-1, LCD_DIR_HORIZONTAL);
-			LCD_DrawLine(radioGroup->Item[i].wmObj.xPos, radioGroup->Item[i].wmObj.yPos, 15, LCD_DIR_VERTICAL);
-			LCD_DrawLine(radioGroup->Item[i].wmObj.xPos+1, radioGroup->Item[i].wmObj.yPos, 15-1, LCD_DIR_VERTICAL);
-
-
-			// Bot-Right Dark Border
-			LCD_SetTextColor(LCD_COLOR_WHITE);
-			LCD_DrawLine(radioGroup->Item[i].wmObj.xPos+1, radioGroup->Item[i].wmObj.yPos+15-1, 15-1, LCD_DIR_HORIZONTAL);
-			LCD_DrawLine(radioGroup->Item[i].wmObj.xPos+15-1, radioGroup->Item[i].wmObj.yPos+1, 15-1, LCD_DIR_VERTICAL);
-			LCD_SetTextColor(radioGroup->Item[i].wmObj.BorderColor);
-			LCD_DrawLine(radioGroup->Item[i].wmObj.xPos+2, radioGroup->Item[i].wmObj.yPos+15-2, 15-3, LCD_DIR_HORIZONTAL);
-			LCD_DrawLine(radioGroup->Item[i].wmObj.xPos+15-2, radioGroup->Item[i].wmObj.yPos+2, 15-3, LCD_DIR_VERTICAL);
 			// Center
+			LCD_SetColors(LCD_COLOR_GREYD, LCD_COLOR_GREYL);
+			LCD_DrawFullCircle(xCenter, yCenter, 7);
+
 			if (radioGroup->wmObj.Enable)
-				LCD_SetTextColor(LCD_COLOR_WHITE);
-			else
-				LCD_SetTextColor(LCD_COLOR_GREYL);
-			LCD_DrawFillRect(radioGroup->Item[i].wmObj.xPos+2,radioGroup->Item[i].wmObj.yPos+2,15-4,15-4);
+			{
+				LCD_SetColors(LCD_COLOR_WHITE, LCD_COLOR_WHITE);
+				LCD_DrawFullCircle(xCenter, yCenter, 5);
+			}
 			if (radioGroup->ItemSelected == i)
 			{
 				if (radioGroup->wmObj.Enable)
-					LCD_SetTextColor(LCD_COLOR_BLACK);
+					LCD_SetColors(LCD_COLOR_BLACK, LCD_COLOR_BLACK);
 				else
-					LCD_SetTextColor(LCD_COLOR_GREYD);
-				LCD_DrawFillRect(radioGroup->Item[i].wmObj.xPos+4,radioGroup->Item[i].wmObj.yPos+4,15-8,15-8);
+					LCD_SetColors(LCD_COLOR_GREYD, LCD_COLOR_GREYD);
+				LCD_DrawFullCircle(xCenter, yCenter, 3);
 			}
 
 
@@ -171,27 +164,32 @@ void RadioGroupDraw(GUI_RADIO_GROUP * radioGroup)
 
 void RadioGroupStateRefresh(GUI_RADIO_GROUP * radioGroup)
 {
-	uint16_t i;
+	uint16_t i, xCenter, yCenter;
 	if (radioGroup->wmObj.Visible)
 	{
+		xCenter = radioGroup->Item[0].wmObj.xPos + 7;
 		// Items text
 		for (i = 0; i < radioGroup->NumItem; i++)
 		{
+			yCenter = radioGroup->Item[i].wmObj.yPos + radioGroup->Item[i].wmObj.Height/2;
 			// check symbol
-
 			// Center
+			LCD_SetColors(LCD_COLOR_GREYD, LCD_COLOR_GREYL);
+			LCD_DrawFullCircle(xCenter, yCenter, 7);
+
 			if (radioGroup->wmObj.Enable)
-				LCD_SetTextColor(LCD_COLOR_WHITE);
-			else
-				LCD_SetTextColor(LCD_COLOR_GREYL);
-			LCD_DrawFillRect(radioGroup->Item[i].wmObj.xPos+2,radioGroup->Item[i].wmObj.yPos+2,15-4,15-4);
+			{
+				LCD_SetColors(LCD_COLOR_WHITE, LCD_COLOR_WHITE);
+				LCD_DrawFullCircle(xCenter, yCenter, 5);
+			}
+
 			if (radioGroup->ItemSelected == i)
 			{
 				if (radioGroup->wmObj.Enable)
-					LCD_SetTextColor(LCD_COLOR_BLACK);
+					LCD_SetColors(LCD_COLOR_BLACK, LCD_COLOR_BLACK);
 				else
-					LCD_SetTextColor(LCD_COLOR_GREYD);
-				LCD_DrawFillRect(radioGroup->Item[i].wmObj.xPos+4,radioGroup->Item[i].wmObj.yPos+4,15-8,15-8);
+					LCD_SetColors(LCD_COLOR_GREYD, LCD_COLOR_GREYD);
+				LCD_DrawFullCircle(xCenter, yCenter, 3);
 			}
 		}
 	}

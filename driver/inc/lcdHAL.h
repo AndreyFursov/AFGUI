@@ -11,37 +11,47 @@
 #define LCD_PIXEL_WIDTH		320
 #define LCD_PIXEL_HEIGHT	240
 
-#define LCD_COLOR_RED		 	0xFC00
-#define LCD_COLOR_REDD		 	0x8000
-#define LCD_COLOR_GREEN 		0x03F0
-#define LCD_COLOR_GREEND 		0x0200
-#define LCD_COLOR_BLUE	 		0x000F
-#define LCD_COLOR_BLACK 		0x0000
-#define LCD_COLOR_WHITE 		0xFFFF
-#define LCD_COLOR_GREYL 		0xA28A
-#define LCD_COLOR_GREYD 		0x6186
-#define LCD_COLOR_YELLOW	 	0xFFF0
-#define LCD_COLOR_ORANGE	 	0xFD10
-#define LCD_COLOR_LIME	 		0x7FF0
+#define LCD_COLOR_WHITE 		0
+#define LCD_COLOR_TEAL	 		1
+#define LCD_COLOR_PURPLE 		2
+#define LCD_COLOR_BLUE	 		3
+#define LCD_COLOR_GREYL 		4
+#define LCD_COLOR_GREYD 		5
+#define LCD_COLOR_TEALD	 		6
+#define LCD_COLOR_PURPLED 		7
+#define LCD_COLOR_BLUED	 		8
+#define LCD_COLOR_YELLOW	 	9
+#define LCD_COLOR_GREEN 		10
+#define LCD_COLOR_YELLOWD	 	11
+#define LCD_COLOR_GREEND 		12
+#define LCD_COLOR_RED		 	13
+#define LCD_COLOR_REDD		 	14
+#define LCD_COLOR_BLACK 		15
 
-#define COLOR_RED_MASK			0xFC00
-#define COLOR_GREEN_MASK		0x03F0
-#define COLOR_BLUE_MASK			0x000F
+#define COLOR_24B_WHITE 		0x00FFFFFF
+#define COLOR_24B_TEAL	 		0x0000FFFF
+#define COLOR_24B_PURPLE 		0x00FF00FF
+#define COLOR_24B_BLUE	 		0x000000FF
+#define COLOR_24B_GREYL 		0x00C0C0C0
+#define COLOR_24B_GREYD 		0x00808080
+#define COLOR_24B_TEALD	 		0x00008080
+#define COLOR_24B_PURPLED 		0x00800080
+#define COLOR_24B_BLUED	 		0x00000080
+#define COLOR_24B_YELLOW	 	0x00FFFF00
+#define COLOR_24B_GREEN 		0x0000FF00
+#define COLOR_24B_YELLOWD	 	0x00808000
+#define COLOR_24B_GREEND 		0x00008000
+#define COLOR_24B_RED		 	0x00FF0000
+#define COLOR_24B_REDD		 	0x00800000
+#define COLOR_24B_BLACK 		0x00000000
 
-#define COLOR_RED_OFFSET		0x000A
-#define COLOR_GREEN_OFFSET		0x0004
-#define COLOR_BLUE_OFFSET		0x0000
 
 //******************************************************************************************
 // Init
 extern void LCD_Init(void);
 
+
 //******************************************************************************************
-// Color function
-extern void LCD_SetColors(volatile uint16_t _TextColor, volatile uint16_t _BackColor);
-extern void LCD_GetColors(volatile uint16_t *_TextColor, volatile uint16_t *_BackColor);
-extern void LCD_SetTextColor(volatile uint16_t Color);
-extern void LCD_SetBackColor(volatile uint16_t Color);
 // Font functions
 extern void LCD_SetFont(V_FONT *fonts);
 extern V_FONT *LCD_GetFont(void);
@@ -49,6 +59,7 @@ extern V_FONT *LCD_GetFont(void);
 
 //******************************************************************************************
 // LowLevel Function
+extern void LCD_SetWindow(uint16_t startx, uint16_t starty, uint16_t endx, uint16_t endy);
 extern void LCD_PutPixel(uint16_t x, uint16_t y);
 extern void LCD_DrawChar(uint16_t Xpos, uint16_t Ypos, uint16_t codeChar);
 extern void LCD_DrawFillRect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height);

@@ -7,8 +7,36 @@
 
 
 #include "stm32f2xx_conf.h"
-
 #include "ads7843.h"
+
+int16_t ax, bx, ay, by;
+
+void touchSetCoef(int16_t _ax, int16_t _bx, int16_t _ay, int16_t _by)
+{
+	ax = _ax;
+	bx = _bx;
+	ay = _ay;
+	by = _by;
+}
+
+void touchGetCoef(int16_t *_ax, int16_t *_bx, int16_t *_ay, int16_t *_by)
+{
+	*_ax = ax;
+	*_bx = bx;
+	*_ay = ay;
+	*_by = by;
+}
+
+uint16_t touchVerifyCoef(void)
+{
+	uint16_t ret = 0;
+	if (ax == 0 || ax == 0xFFFF
+		|| bx == 0xFFFF
+		|| ay == 0 || ay == 0xFFFF
+		|| by == 0xFFFF)
+	ret = 1;
+	return ret;
+}
 
 
 void TP_SPI_Config(void)
@@ -28,7 +56,7 @@ void TP_SPI_Config(void)
 	GPIO_Init(GPIOG, &GPIO_InitStructure);
 	GPIO_SetBits(GPIOG, GPIO_Pin_11 | GPIO_Pin_15);
 
- 	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_13;			// PC13
+ 	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_13;			// PC13 touch
   	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
   	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
   	GPIO_Init(GPIOC, &GPIO_InitStructure);
@@ -147,44 +175,126 @@ void TP_SPI_Config(void)
 }
 
 
+int16_t touchGetX(void)
+{
+	uint16_t LSB, MSB;
+	int16_t ret = 4095;
+
+	if (GPIO_ReadInputDataBit (GPIOD, GPIO_Pin_12) == 0)
+	{
+		TP_Select();
+		ret = 0x2F;
+		while(--ret);
+		// x
+		SPI_I2S_SendData(SPI2, 0x9400);
+		/* Wait to receive a byte */
+		while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET) { ; }
+		MSB=SPI_I2S_ReceiveData(SPI2);
+		SPI_I2S_SendData(SPI2, 0);
+		while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET) { ; }
+		/* Return the byte read from the SPI bus */
+		LSB=SPI_I2S_ReceiveData(SPI2);
+
+		ret=0x0F;
+		while(--ret);
+		TP_Deselect();
+
+		ret = ( ((MSB<<4) & 0x0FF0) | ((LSB>>12) & 0x000F) )<<1;
+	}
+
+	return ret;
+}
+
+int16_t touchGetY(void)
+{
+	uint16_t LSB, MSB;
+	int16_t ret = 4095;
+
+	if (GPIO_ReadInputDataBit (GPIOD, GPIO_Pin_12) == 0)
+	{
+		TP_Select();
+		ret = 0x2F;
+		while(--ret);
+		// y
+		SPI_I2S_SendData(SPI2, 0xD400);
+		/* Wait to receive a byte */
+		while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET) { ; }
+		MSB=SPI_I2S_ReceiveData(SPI2);
+		SPI_I2S_SendData(SPI2, 0);
+		while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET) { ; }
+		/* Return the byte read from the SPI bus */
+		LSB=SPI_I2S_ReceiveData(SPI2);
+		ret=0x0F;
+		while(--ret);
+		TP_Deselect();
+
+		ret = ( ((MSB<<4) & 0x0FF0) | ((LSB>>12) & 0x000F) )<<1;
+	}
+	return ret;
+}
+
+
 void touchGetSense(int16_t * x, int16_t * y)
 {
 	uint32_t i=0x0f;
 	uint16_t MSB, LSB;
 	int16_t datax, datay;
-	TP_Select();
-	while(--i);
+	
+	if (GPIO_ReadInputDataBit (GPIOD, GPIO_Pin_12) == 0)
+	{
+	
+		TP_Select();
+		while(--i);
 
 
-	// x
-	SPI_I2S_SendData(SPI2, 0x9400);
-	/* Wait to receive a byte */
-	while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET) { ; }
-	MSB=SPI_I2S_ReceiveData(SPI2);
-	SPI_I2S_SendData(SPI2, 0);
-	while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET) { ; }
-	/* Return the byte read from the SPI bus */
-	LSB=SPI_I2S_ReceiveData(SPI2);
-	datax = ( ((MSB<<4) & 0x0FF0) | ((LSB>>12) & 0x000F) )<<1;
-	datax = (datax/11)-17;
+		// x
+		SPI_I2S_SendData(SPI2, 0x9400);
+		/* Wait to receive a byte */
+		while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET) { ; }
+		MSB=SPI_I2S_ReceiveData(SPI2);
+		SPI_I2S_SendData(SPI2, 0);
+		while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET) { ; }
+		/* Return the byte read from the SPI bus */
+		LSB=SPI_I2S_ReceiveData(SPI2);
+		datax = ( ((MSB<<4) & 0x0FF0) | ((LSB>>12) & 0x000F) )<<1;
+		datax = (datax/ax)+bx;
+		//datax = (datax/11)-17;
 
-	// y
-	SPI_I2S_SendData(SPI2, 0xD400);
-	/* Wait to receive a byte */
-	while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET) { ; }
-	MSB=SPI_I2S_ReceiveData(SPI2);
-	SPI_I2S_SendData(SPI2, 0);
-	while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET) { ; }
-	/* Return the byte read from the SPI bus */
-	LSB=SPI_I2S_ReceiveData(SPI2);
-	datay = ( ((MSB<<4) & 0x0FF0) | ((LSB>>12) & 0x000F) )<<1;
-	datay = 256 - (datay/15);
+		// y
+		SPI_I2S_SendData(SPI2, 0xD400);
+		/* Wait to receive a byte */
+		while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET) { ; }
+		MSB=SPI_I2S_ReceiveData(SPI2);
+		SPI_I2S_SendData(SPI2, 0);
+		while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET) { ; }
+		/* Return the byte read from the SPI bus */
+		LSB=SPI_I2S_ReceiveData(SPI2);
+		datay = ( ((MSB<<4) & 0x0FF0) | ((LSB>>12) & 0x000F) )<<1;
+		//datay = 256 - (datay/15);
+		datay = (datay/ay)+by;
 
-	i=0x0F;
-	while(--i);
-	TP_Deselect();
+		i=0x0F;
+		while(--i);
+		TP_Deselect();
+	}
+	else
+	{
+		datax = 4095;
+		datay = 4095;
+	}
+	
+	
 
 	*x = datax;
 	*y = datay;
+}
+
+uint16_t getTouchState(void)
+{
+	uint16_t ret = 0;
+	
+	if (GPIO_ReadInputDataBit (GPIOD, GPIO_Pin_12) == 0)
+		ret = 1;
+	return ret;
 }
 

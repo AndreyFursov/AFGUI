@@ -6,47 +6,192 @@
  */
 #include "gui.h"
 
+enum LCD_COLOR_MODE colorMode;
+enum LCD_COLOR_GRAM colorGRAM;
+
+uint32_t TextColor;
+uint32_t BackColor;
+uint16_t indexText;
+uint16_t indexBack;
+
+uint32_t palette[16];
+
+void LCD_SetPalette(void);
+
+
+//*************************************************************
+// color mode
+void LCD_SetColorMode(enum LCD_COLOR_MODE _colorMode)
+{
+	colorMode = _colorMode;
+}
+void LCD_SetColorGRAM(enum LCD_COLOR_GRAM _colorGRAM)
+{
+	colorGRAM = _colorGRAM;
+	LCD_SetPalette();
+}
+enum LCD_COLOR_MODE LCD_GetColorMode(void)
+{
+	return colorMode;
+}
+enum LCD_COLOR_GRAM LCD_GetColorGRAM(void)
+{
+	return colorGRAM;
+}
+
+
+//*************************************************************
+// color
+void LCD_SetColors(volatile uint16_t _TextColor, volatile uint16_t _BackColor)
+{
+	if (colorMode == colorRGB)
+	{
+		TextColor = _TextColor;
+		BackColor = _BackColor;
+	}
+	if (colorMode == colorIndex)
+	{
+		indexText = _TextColor;
+		indexBack = _BackColor;
+		TextColor = palette[indexText];
+		BackColor = palette[indexBack];
+	}
+}
+
+void LCD_GetColors(volatile uint16_t *_TextColor, volatile uint16_t *_BackColor)
+{
+	if (colorMode == colorRGB)
+	{
+		*_TextColor = TextColor;
+		*_BackColor = BackColor;
+	}
+	if (colorMode == colorIndex)
+	{
+		*_TextColor = indexText;
+		*_BackColor = indexBack;
+	}
+	//*_TextColor = indexText; *_BackColor = indexBack;
+}
+
+void LCD_SetTextColor(volatile uint16_t Color)
+{
+	if (colorMode == colorRGB)
+	{
+		TextColor = Color;
+	}
+	if (colorMode == colorIndex)
+	{
+		indexText = Color;
+		TextColor = palette[indexText];
+	}
+}
+
+void LCD_SetBackColor(volatile uint16_t Color)
+{
+	if (colorMode == colorRGB)
+	{
+		BackColor = Color;
+	}
+	if (colorMode == colorIndex)
+	{
+		indexBack = Color;
+		BackColor = palette[indexBack];
+	}
+}
+
+void LCD_SetPalette(void)
+{
+	uint16_t i;
+	i = 0;
+	if (colorGRAM == lcdColorRGB_565)
+	{
+		palette[i++] = ((COLOR_24B_WHITE>>16)&COLOR_RED_MASK_565)<<COLOR_RED_OFFSET_565 | ((COLOR_24B_WHITE>>8)&COLOR_GREEN_MASK_565)<<COLOR_GREEN_OFFSET_565 | ((COLOR_24B_WHITE )&COLOR_BLUE_MASK_565)>>COLOR_BLUE_OFFSET_565;	//!< White			COLOR_24B_BLACK
+		palette[i++] = ((COLOR_24B_TEAL>>16)&COLOR_RED_MASK_565)<<COLOR_RED_OFFSET_565 | ((COLOR_24B_TEAL>>8)&COLOR_GREEN_MASK_565)<<COLOR_GREEN_OFFSET_565 | ((COLOR_24B_TEAL )&COLOR_BLUE_MASK_565)>>COLOR_BLUE_OFFSET_565;	//!< Teal			0x00FFFF
+		palette[i++] = ((COLOR_24B_PURPLE>>16)&COLOR_RED_MASK_565)<<COLOR_RED_OFFSET_565 | ((COLOR_24B_PURPLE>>8)&COLOR_GREEN_MASK_565)<<COLOR_GREEN_OFFSET_565 | ((COLOR_24B_PURPLE )&COLOR_BLUE_MASK_565)>>COLOR_BLUE_OFFSET_565;	//!< Purple			COLOR_24B_PURPLE
+		palette[i++] = ((COLOR_24B_BLUE>>16)&COLOR_RED_MASK_565)<<COLOR_RED_OFFSET_565 | ((COLOR_24B_BLUE>>8)&COLOR_GREEN_MASK_565)<<COLOR_GREEN_OFFSET_565 | ((COLOR_24B_BLUE )&COLOR_BLUE_MASK_565)>>COLOR_BLUE_OFFSET_565;	//!< Blue			COLOR_24B_BLUE
+
+		palette[i++] = ((COLOR_24B_GREYL>>16)&COLOR_RED_MASK_565)<<COLOR_RED_OFFSET_565 | ((COLOR_24B_GREYL>>8)&COLOR_GREEN_MASK_565)<<COLOR_GREEN_OFFSET_565 | ((COLOR_24B_GREYL )&COLOR_BLUE_MASK_565)>>COLOR_BLUE_OFFSET_565;	//!< Light gray		COLOR_24B_GREYL
+		palette[i++] = ((COLOR_24B_GREYD>>16)&COLOR_RED_MASK_565)<<COLOR_RED_OFFSET_565 | ((COLOR_24B_GREYD>>8)&COLOR_GREEN_MASK_565)<<COLOR_GREEN_OFFSET_565 | ((COLOR_24B_GREYD )&COLOR_BLUE_MASK_565)>>COLOR_BLUE_OFFSET_565;	//!< Dark gray		COLOR_24B_GREYD
+		palette[i++] = ((COLOR_24B_TEALD>>16)&COLOR_RED_MASK_565)<<COLOR_RED_OFFSET_565 | ((COLOR_24B_TEALD>>8)&COLOR_GREEN_MASK_565)<<COLOR_GREEN_OFFSET_565 | ((COLOR_24B_TEALD )&COLOR_BLUE_MASK_565)>>COLOR_BLUE_OFFSET_565;	//!< Dark teal		COLOR_24B_TEALD
+		palette[i++] = ((COLOR_24B_PURPLED>>16)&COLOR_RED_MASK_565)<<COLOR_RED_OFFSET_565 | ((COLOR_24B_PURPLED>>8)&COLOR_GREEN_MASK_565)<<COLOR_GREEN_OFFSET_565 | ((COLOR_24B_PURPLED )&COLOR_BLUE_MASK_565)>>COLOR_BLUE_OFFSET_565;	//!< Dark purple	COLOR_24B_PURPLED
+
+		palette[i++] = ((COLOR_24B_BLUED>>16)&COLOR_RED_MASK_565)<<COLOR_RED_OFFSET_565 | ((COLOR_24B_BLUED>>8)&COLOR_GREEN_MASK_565)<<COLOR_GREEN_OFFSET_565 | ((COLOR_24B_BLUED )&COLOR_BLUE_MASK_565)>>COLOR_BLUE_OFFSET_565;	//!< Dark blue		COLOR_24B_BLUED
+		palette[i++] = ((COLOR_24B_YELLOW>>16)&COLOR_RED_MASK_565)<<COLOR_RED_OFFSET_565 | ((COLOR_24B_YELLOW>>8)&COLOR_GREEN_MASK_565)<<COLOR_GREEN_OFFSET_565 | ((COLOR_24B_YELLOW )&COLOR_BLUE_MASK_565)>>COLOR_BLUE_OFFSET_565;	//!< Yellow			COLOR_24B_YELLOW
+		palette[i++] = ((COLOR_24B_GREEN>>16)&COLOR_RED_MASK_565)<<COLOR_RED_OFFSET_565 | ((COLOR_24B_GREEN>>8)&COLOR_GREEN_MASK_565)<<COLOR_GREEN_OFFSET_565 | ((COLOR_24B_GREEN )&COLOR_BLUE_MASK_565)>>COLOR_BLUE_OFFSET_565;	//!< Green			COLOR_24B_GREEN
+		palette[i++] = ((COLOR_24B_YELLOWD>>16)&COLOR_RED_MASK_565)<<COLOR_RED_OFFSET_565 | ((COLOR_24B_YELLOWD>>8)&COLOR_GREEN_MASK_565)<<COLOR_GREEN_OFFSET_565 | ((COLOR_24B_YELLOWD )&COLOR_BLUE_MASK_565)>>COLOR_BLUE_OFFSET_565;	//!< Dark Yllow		COLOR_24B_YELLOWD
+
+		palette[i++] = ((COLOR_24B_GREEND>>16)&COLOR_RED_MASK_565)<<COLOR_RED_OFFSET_565 | ((COLOR_24B_GREEND>>8)&COLOR_GREEN_MASK_565)<<COLOR_GREEN_OFFSET_565 | ((COLOR_24B_GREEND )&COLOR_BLUE_MASK_565)>>COLOR_BLUE_OFFSET_565;	//!< Dark green		COLOR_24B_GREEND
+		palette[i++] = ((COLOR_24B_RED>>16)&COLOR_RED_MASK_565)<<COLOR_RED_OFFSET_565 | ((COLOR_24B_RED>>8)&COLOR_GREEN_MASK_565)<<COLOR_GREEN_OFFSET_565 | ((COLOR_24B_RED )&COLOR_BLUE_MASK_565)>>COLOR_BLUE_OFFSET_565;	//!< Red			COLOR_24B_RED
+		palette[i++] = ((COLOR_24B_REDD>>16)&COLOR_RED_MASK_565)<<COLOR_RED_OFFSET_565 | ((COLOR_24B_REDD>>8)&COLOR_GREEN_MASK_565)<<COLOR_GREEN_OFFSET_565 | ((COLOR_24B_REDD )&COLOR_BLUE_MASK_565)>>COLOR_BLUE_OFFSET_565;	//!< Dark red		COLOR_24B_REDD
+		palette[i++] = ((COLOR_24B_BLACK>>16)&COLOR_RED_MASK_565)<<COLOR_RED_OFFSET_565 | ((COLOR_24B_BLACK>>8)&COLOR_GREEN_MASK_565)<<COLOR_GREEN_OFFSET_565 | ((COLOR_24B_BLACK )&COLOR_BLUE_MASK_565)>>COLOR_BLUE_OFFSET_565;	//!< Black			COLOR_24B_BLACK
+	}
+	if (colorGRAM == lcdColorRGB_666)
+	{
+		palette[i++] = ((COLOR_24B_WHITE>>16)&COLOR_RED_MASK_666)<<COLOR_RED_OFFSET_666 | ((COLOR_24B_WHITE>>8)&COLOR_GREEN_MASK_666)<<COLOR_GREEN_OFFSET_666 | ((COLOR_24B_WHITE )&COLOR_BLUE_MASK_666)<<COLOR_BLUE_OFFSET_666;	//!< White			COLOR_24B_BLACK
+		palette[i++] = ((COLOR_24B_TEAL>>16)&COLOR_RED_MASK_666)<<COLOR_RED_OFFSET_666 | ((COLOR_24B_TEAL>>8)&COLOR_GREEN_MASK_666)<<COLOR_GREEN_OFFSET_666 | ((COLOR_24B_TEAL )&COLOR_BLUE_MASK_666)<<COLOR_BLUE_OFFSET_666;	//!< Teal			0x00FFFF
+		palette[i++] = ((COLOR_24B_PURPLE>>16)&COLOR_RED_MASK_666)<<COLOR_RED_OFFSET_666 | ((COLOR_24B_PURPLE>>8)&COLOR_GREEN_MASK_666)<<COLOR_GREEN_OFFSET_666 | ((COLOR_24B_PURPLE )&COLOR_BLUE_MASK_666)<<COLOR_BLUE_OFFSET_666;	//!< Purple			COLOR_24B_PURPLE
+		palette[i++] = ((COLOR_24B_BLUE>>16)&COLOR_RED_MASK_666)<<COLOR_RED_OFFSET_666 | ((COLOR_24B_BLUE>>8)&COLOR_GREEN_MASK_666)<<COLOR_GREEN_OFFSET_666 | ((COLOR_24B_BLUE )&COLOR_BLUE_MASK_666)<<COLOR_BLUE_OFFSET_666;	//!< Blue			COLOR_24B_BLUE
+
+		palette[i++] = ((COLOR_24B_GREYL>>16)&COLOR_RED_MASK_666)<<COLOR_RED_OFFSET_666 | ((COLOR_24B_GREYL>>8)&COLOR_GREEN_MASK_666)<<COLOR_GREEN_OFFSET_666 | ((COLOR_24B_GREYL )&COLOR_BLUE_MASK_666)<<COLOR_BLUE_OFFSET_666;	//!< Light gray		COLOR_24B_GREYL
+		palette[i++] = ((COLOR_24B_GREYD>>16)&COLOR_RED_MASK_666)<<COLOR_RED_OFFSET_666 | ((COLOR_24B_GREYD>>8)&COLOR_GREEN_MASK_666)<<COLOR_GREEN_OFFSET_666 | ((COLOR_24B_GREYD )&COLOR_BLUE_MASK_666)<<COLOR_BLUE_OFFSET_666;	//!< Dark gray		COLOR_24B_GREYD
+		palette[i++] = ((COLOR_24B_TEALD>>16)&COLOR_RED_MASK_666)<<COLOR_RED_OFFSET_666 | ((COLOR_24B_TEALD>>8)&COLOR_GREEN_MASK_666)<<COLOR_GREEN_OFFSET_666 | ((COLOR_24B_TEALD )&COLOR_BLUE_MASK_666)<<COLOR_BLUE_OFFSET_666;	//!< Dark teal		COLOR_24B_TEALD
+		palette[i++] = ((COLOR_24B_PURPLED>>16)&COLOR_RED_MASK_666)<<COLOR_RED_OFFSET_666 | ((COLOR_24B_PURPLED>>8)&COLOR_GREEN_MASK_666)<<COLOR_GREEN_OFFSET_666 | ((COLOR_24B_PURPLED )&COLOR_BLUE_MASK_666)<<COLOR_BLUE_OFFSET_666;	//!< Dark purple	COLOR_24B_PURPLED
+
+		palette[i++] = ((COLOR_24B_BLUED>>16)&COLOR_RED_MASK_666)<<COLOR_RED_OFFSET_666 | ((COLOR_24B_BLUED>>8)&COLOR_GREEN_MASK_666)<<COLOR_GREEN_OFFSET_666 | ((COLOR_24B_BLUED )&COLOR_BLUE_MASK_666)<<COLOR_BLUE_OFFSET_666;	//!< Dark blue		COLOR_24B_BLUED
+		palette[i++] = ((COLOR_24B_YELLOW>>16)&COLOR_RED_MASK_666)<<COLOR_RED_OFFSET_666 | ((COLOR_24B_YELLOW>>8)&COLOR_GREEN_MASK_666)<<COLOR_GREEN_OFFSET_666 | ((COLOR_24B_YELLOW )&COLOR_BLUE_MASK_666)<<COLOR_BLUE_OFFSET_666;	//!< Yellow			COLOR_24B_YELLOW
+		palette[i++] = ((COLOR_24B_GREEN>>16)&COLOR_RED_MASK_666)<<COLOR_RED_OFFSET_666 | ((COLOR_24B_GREEN>>8)&COLOR_GREEN_MASK_666)<<COLOR_GREEN_OFFSET_666 | ((COLOR_24B_GREEN )&COLOR_BLUE_MASK_666)<<COLOR_BLUE_OFFSET_666;	//!< Green			COLOR_24B_GREEN
+		palette[i++] = ((COLOR_24B_YELLOWD>>16)&COLOR_RED_MASK_666)<<COLOR_RED_OFFSET_666 | ((COLOR_24B_YELLOWD>>8)&COLOR_GREEN_MASK_666)<<COLOR_GREEN_OFFSET_666 | ((COLOR_24B_YELLOWD )&COLOR_BLUE_MASK_666)<<COLOR_BLUE_OFFSET_666;	//!< Dark Yllow		COLOR_24B_YELLOWD
+
+		palette[i++] = ((COLOR_24B_GREEND>>16)&COLOR_RED_MASK_666)<<COLOR_RED_OFFSET_666 | ((COLOR_24B_GREEND>>8)&COLOR_GREEN_MASK_666)<<COLOR_GREEN_OFFSET_666 | ((COLOR_24B_GREEND )&COLOR_BLUE_MASK_666)<<COLOR_BLUE_OFFSET_666;	//!< Dark green		COLOR_24B_GREEND
+		palette[i++] = ((COLOR_24B_RED>>16)&COLOR_RED_MASK_666)<<COLOR_RED_OFFSET_666 | ((COLOR_24B_RED>>8)&COLOR_GREEN_MASK_666)<<COLOR_GREEN_OFFSET_666 | ((COLOR_24B_RED )&COLOR_BLUE_MASK_666)<<COLOR_BLUE_OFFSET_666;	//!< Red			COLOR_24B_RED
+		palette[i++] = ((COLOR_24B_REDD>>16)&COLOR_RED_MASK_666)<<COLOR_RED_OFFSET_666 | ((COLOR_24B_REDD>>8)&COLOR_GREEN_MASK_666)<<COLOR_GREEN_OFFSET_666 | ((COLOR_24B_REDD )&COLOR_BLUE_MASK_666)<<COLOR_BLUE_OFFSET_666;	//!< Dark red		COLOR_24B_REDD
+		palette[i++] = ((COLOR_24B_BLACK>>16)&COLOR_RED_MASK_666)<<COLOR_RED_OFFSET_666 | ((COLOR_24B_BLACK>>8)&COLOR_GREEN_MASK_666)<<COLOR_GREEN_OFFSET_666 | ((COLOR_24B_BLACK )&COLOR_BLUE_MASK_666)<<COLOR_BLUE_OFFSET_666;	//!< Black			COLOR_24B_BLACK
+	}
+}
+
+
+
 uint16_t guiChangeColorLight(uint16_t color, uint16_t percent)
 {
 	uint32_t temp, outColor;
-	outColor = 0;
-	temp = 0;
-	if (percent > 99)
-	{
-		if ((color & COLOR_RED_MASK) == COLOR_RED_MASK)
-			temp |= 0x00F3;
-		if ((color & COLOR_GREEN_MASK) == COLOR_GREEN_MASK)
-			temp |= 0x3C03;
-		if ((color & COLOR_BLUE_MASK) == COLOR_BLUE_MASK)
-			temp |= 0x3CF0;
-		if (color == 0) color = 0x5145;
-
-	}
-	color |= (uint16_t)temp;
-	// red channel
-	temp = (color & COLOR_RED_MASK)>>COLOR_RED_OFFSET;
-	temp *= percent;
-	temp /= 100;
-	if (temp > 0x3F) temp = 0x3F;
-	temp <<= COLOR_RED_OFFSET;
-	temp &= COLOR_RED_MASK;
-	outColor |= temp;
-	// green channel
-	temp = (color & COLOR_GREEN_MASK)>>COLOR_GREEN_OFFSET;
-	temp *= percent;
-	temp /= 100;
-	if (temp > 0x3F) temp = 0x3F;
-	temp <<= COLOR_GREEN_OFFSET;
-	temp &= COLOR_GREEN_MASK;
-	outColor |= temp;
-	// blue channel
-	temp = (color & COLOR_BLUE_MASK)>>COLOR_BLUE_OFFSET;
-	temp *= percent;
-	temp /= 100;
-	if (temp > 0x0F) temp = 0x0F;
-	temp <<= COLOR_BLUE_OFFSET;
-	temp &= COLOR_BLUE_MASK;
-	outColor |= temp;
+//	outColor = 0;
+//	temp = 0;
+//	if (percent > 99)
+//	{
+//		if ((color & COLOR_RED_MASK) == COLOR_RED_MASK)
+//			temp |= 0x00F3;
+//		if ((color & COLOR_GREEN_MASK) == COLOR_GREEN_MASK)
+//			temp |= 0x3C03;
+//		if ((color & COLOR_BLUE_MASK) == COLOR_BLUE_MASK)
+//			temp |= 0x3CF0;
+//		if (color == 0) color = 0x5145;
+//
+//	}
+//	color |= (uint16_t)temp;
+//	// red channel
+//	temp = (color & COLOR_RED_MASK)>>COLOR_RED_OFFSET;
+//	temp *= percent;
+//	temp /= 100;
+//	if (temp > 0x3F) temp = 0x3F;
+//	temp <<= COLOR_RED_OFFSET;
+//	temp &= COLOR_RED_MASK;
+//	outColor |= temp;
+//	// green channel
+//	temp = (color & COLOR_GREEN_MASK)>>COLOR_GREEN_OFFSET;
+//	temp *= percent;
+//	temp /= 100;
+//	if (temp > 0x3F) temp = 0x3F;
+//	temp <<= COLOR_GREEN_OFFSET;
+//	temp &= COLOR_GREEN_MASK;
+//	outColor |= temp;
+//	// blue channel
+//	temp = (color & COLOR_BLUE_MASK)>>COLOR_BLUE_OFFSET;
+//	temp *= percent;
+//	temp /= 100;
+//	if (temp > 0x0F) temp = 0x0F;
+//	temp <<= COLOR_BLUE_OFFSET;
+//	temp &= COLOR_BLUE_MASK;
+//	outColor |= temp;
 
 
 	return (uint16_t)outColor;

@@ -67,13 +67,27 @@ ver 0.0.003
 - add widget GUI_UPDOWN_BOX. used widgets GUI_LABEL and TEXT_BUTTON
 - add methods CheckBoxTouchControl and CheckBoxStateRefresh for GUI_CHECK_BOX
 - add widget GUI_RADIO_GROUP
-- add driver for beeper
+- add driver for beeper, bad variant for one type hardware 
 
 do it
 - round for RADIO GROUP
 - (*) for TEST_BUTTON
 
+ver 0.0.004
+- add driver for ILI9320
+- round symbol for RADIO GROUP
+- add pointers to functions in TEXT_BUTTON
+- add function TextButtonTouchControl for TEXT_BUTTON 
+- unused function guiChangeColorLight() in widgets
+- color functions removed to guiColor files
+- add universal driver for select lcd controller "on the fly"
+- add indexed colors mode
+- add touch screen calibration. coef's save in 16k flash memory sector
+- in tools add fork "TheDotFactory". modify: add cp-1251 in font and modified lookup table for ascii cp-1251.
 
+do it
+- add GUI_WINDOW object
+- add example
 
 */
 

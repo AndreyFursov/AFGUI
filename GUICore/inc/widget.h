@@ -53,6 +53,7 @@ typedef struct
 
 typedef struct
 {
+
 	unsigned   HoldCounter			: 8;	// Для проверки удерживания
 	unsigned   Jitter				: 2;	// Для подавления дребезга
 
@@ -63,7 +64,7 @@ typedef struct
 	unsigned JustPressed			: 1;	// Кнопки только что нажаты
 	unsigned JustReleased			: 1;	// Кнопки только что отпущены
 	unsigned Changed				: 1;	// Состояние кнопок изменилось
-
+	unsigned 						: 16;	// Выравнивание на 32 бита
 
 } WM_TOUCH;
 

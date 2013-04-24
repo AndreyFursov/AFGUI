@@ -44,7 +44,7 @@ void LCD_DrawTransparentChar(uint16_t Xpos, uint16_t Ypos, uint16_t codeChar)
 		width = LCD_Currentfonts->tableSymbWidth[codeChar];
 	}
 
-	LCD_WriteRAM_Prepare(); /* Prepare to write GRAM */
+//	LCD_WriteRAM_Prepare(); /* Prepare to write GRAM */
 	// Draw Char
 	ptrByte = &LCD_Currentfonts->table[LCD_Currentfonts->tableSymbIndex[codeChar]];
 	for(rawIndex = 0; rawIndex < LCD_Currentfonts->Height; rawIndex++)
@@ -182,49 +182,50 @@ void LCD_DrawFullRect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Hei
 }
 
 //**************************************************************************************
-void LCD_DrawFullCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius)
+void LCD_DrawFullCircle(uint16_t Xpos, uint16_t Ypos, uint16_t radius)
 {
-	int32_t	D;		/* Decision Variable */
-	int32_t	CurX;/* Current X Value */
-	int32_t	CurY;/* Current Y Value */
-	uint16_t tempTextColor, tempBackColor;//, tempBackColor;
-	LCD_GetColors(&tempTextColor, &tempBackColor);
-	//tempBackColor = BackColor;
+	uint16_t textColor, backColor;
+	
+	int16_t f = 1 - radius;
+	int16_t ddF_x = 1;
+	int16_t ddF_y = -2 * radius;
+	int16_t x = 0;
+	int16_t y = radius;
 
-	D = 3 - (Radius << 1);
+	LCD_GetColors(&textColor, &backColor);
+	LCD_SetTextColor(backColor);
+	LCD_DrawLine(Xpos + x, Ypos - y, 2*y, LCD_DIR_VERTICAL);
+//	LCD_DrawLine(Xpos - x, Ypos - y, 2*y, LCD_DIR_VERTICAL);
+//	LCD_DrawLine(Xpos + y, Ypos - x, 2*x, LCD_DIR_VERTICAL);
+//	LCD_DrawLine(Xpos - y, Ypos - x, 2*x, LCD_DIR_VERTICAL);
 
-	CurX = 0;
-	CurY = Radius;
+//	LCD_PutPixel(Xpos, Ypos + radius);
+//	LCD_PutPixel(Xpos, Ypos - radius);
+//	LCD_PutPixel(Xpos + radius, Ypos);
+//	LCD_PutPixel(Xpos - radius, Ypos);
 
-	LCD_SetTextColor(tempBackColor);
-
-	while (CurX <= CurY)
+	while(x < y)
 	{
-		if(CurY > 0)
+		// ddF_x == 2 * x + 1;
+		// ddF_y == -2 * y;
+		// f == x*x + y*y - radius*radius + 2*x - y + 1;
+		if(f >= 0)
 		{
-			LCD_DrawLine(Xpos - CurX, Ypos - CurY, 2*CurY, LCD_DIR_VERTICAL);
-			LCD_DrawLine(Xpos + CurX, Ypos - CurY, 2*CurY, LCD_DIR_VERTICAL);
+			y--;
+			ddF_y += 2;
+			f += ddF_y;
 		}
+		x++;
+		ddF_x += 2;
+		f += ddF_x;
 
-		if(CurX > 0)
-		{
-			LCD_DrawLine(Xpos - CurY, Ypos - CurX, 2*CurX, LCD_DIR_VERTICAL);
-			LCD_DrawLine(Xpos + CurY, Ypos - CurX, 2*CurX, LCD_DIR_VERTICAL);
-		}
-		if (D < 0)
-		{
-			D += (CurX << 2) + 6;
-		}
-		else
-		{
-			D += ((CurX - CurY) << 2) + 10;
-			CurY--;
-		}
-		CurX++;
+		LCD_DrawLine(Xpos + x, Ypos - y, 2*y, LCD_DIR_VERTICAL);
+		LCD_DrawLine(Xpos - x, Ypos - y, 2*y, LCD_DIR_VERTICAL);
+		LCD_DrawLine(Xpos + y, Ypos - x, 2*x, LCD_DIR_VERTICAL);
+		LCD_DrawLine(Xpos - y, Ypos - x, 2*x, LCD_DIR_VERTICAL);
 	}
-
-	LCD_SetTextColor(tempTextColor);
-	LCD_DrawCircle(Xpos, Ypos, Radius);
+	LCD_SetTextColor(textColor);
+	LCD_DrawCircle(Xpos, Ypos, radius);
 }
 
 

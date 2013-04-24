@@ -164,9 +164,9 @@ void wmTouchInit( WM_TOUCH *wmTouch)
 	wmTouch->JustPressed = 0;		 	// Нажата только что (сбрасывается вручную)
 	wmTouch->Hold = 0;					// Не удерживается
 	wmTouch->Short = 0;			   		// Не короткое нажатие
-	wmTouch->HoldCounter = 0;
-	wmTouch->Changed = 0;
-	wmTouch->JustReleased = 0;
+	wmTouch->HoldCounter = 0;			// Счетчик удержания
+	wmTouch->Changed = 0;				// Состояние изменилось
+	wmTouch->JustReleased = 0;			// Только что отпущена (сбрасывается вручную)
 }
 
 void wmTouchControl(WM_OBJ *wmObj, WM_TOUCH *wmTouch, uint16_t x, uint16_t y)
@@ -227,17 +227,20 @@ void wmTouchControl(WM_OBJ *wmObj, WM_TOUCH *wmTouch, uint16_t x, uint16_t y)
 
 			}   // if jitter
 
-			wmTouch->HoldCounter++;
 
-			if (wmTouch->HoldCounter >= 50)	   // Проверяем удерживание
+
+			if (wmTouch->HoldCounter >= 30)	   // Проверяем удержание
 				wmTouch->Hold = 1;
+			else
+				wmTouch->HoldCounter++;
 
 		}   // if button pressed
 
 	}
 	else
 	{
-		*((uint16_t *)wmTouch) = 0;
+		//
+		*((uint16_t *)&wmTouch) = 0;
 	}
 
 }

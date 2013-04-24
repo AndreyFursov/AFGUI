@@ -42,6 +42,7 @@
 #include "guiChart.h"
 #include "guiUpDownBox.h"
 #include "guiRadioGroup.h"
+#include "guiTouchCalibration.h"
 
 // Default
 #define LCD_DEFAULT_FONT GL_ArialBold_16

@@ -32,6 +32,8 @@ void defaultTextButtonInit(TEXT_BUTTON * button, uint16_t x, uint16_t y, uint16_
 	button->wmTxt.TextDirection	= DIR_LEFT_TO_RIGHT;
 	button->wmTxt.TextFlip		= FLIP_NO;
 	button->wmTxt.TextLen 		= 0;
+	button->fOnTouch			= 0;
+	button->fOnUntouch			= 0;
 	wmTouchInit(&button->wmTouch);
 };
 
@@ -68,8 +70,35 @@ void TextButtonDraw(TEXT_BUTTON * button)
 		if (button->wmObj.Enable)
 			LCD_SetColors(button->wmTxt.TextColor, button->wmObj.Color);
 		else
-			LCD_SetColors(guiChangeColorLight(button->wmObj.Color, 120), button->wmObj.Color);;
+			LCD_SetColors(LCD_COLOR_GREYD, button->wmObj.Color);
 		LCD_DrawString(button->wmTxt.Text, button->wmTxt.TextLen, button->wmTxt.TextPosX, button->wmTxt.TextPosY);
+	}
+}
+
+void TextButtonTouchControl(TEXT_BUTTON * button,  int16_t xTouch, int16_t yTouch)
+{
+	wmTouchControl(&button->wmObj, &button->wmTouch, xTouch, yTouch);
+
+	if (button->wmTouch.Changed)
+	{
+		button->wmTouch.Changed = 0;
+		TextButtonStateRefresh(button);
+
+		if (button->fOnTouch && button->wmTouch.JustPressed)
+		{
+			button->wmTouch.JustPressed = 0;
+			button->fOnTouch();
+		}
+		if (button->fOnUntouch && button->wmTouch.JustReleased)
+		{
+			button->wmTouch.JustReleased = 0;
+			button->fOnUntouch();
+		}
+	}
+
+	if (button->fOnTouch && button->wmTouch.Pressed  && button->wmTouch.Hold)
+	{
+		button->fOnTouch();
 	}
 }
 
@@ -81,13 +110,17 @@ void TextButtonStateRefresh(TEXT_BUTTON * button)
 	{
 		if (button->wmTouch.Pressed)
 		{
-			colorBR = guiChangeColorLight(button->wmObj.Color, 150);
-			colorTL = guiChangeColorLight(button->wmObj.Color, 50);
+//			colorBR = guiChangeColorLight(button->wmObj.Color, 150);
+//			colorTL = guiChangeColorLight(button->wmObj.Color, 50);
+			colorBR = LCD_COLOR_WHITE;
+			colorTL = LCD_COLOR_GREYD;
 		}
 		else
 		{
-			colorTL = guiChangeColorLight(button->wmObj.Color, 150);
-			colorBR = guiChangeColorLight(button->wmObj.Color, 50);
+//			colorTL = guiChangeColorLight(button->wmObj.Color, 150);
+//			colorBR = guiChangeColorLight(button->wmObj.Color, 50);
+			colorTL = LCD_COLOR_WHITE;
+			colorBR = LCD_COLOR_GREYD;
 		}
 
 		// Bot-Right Dark Border

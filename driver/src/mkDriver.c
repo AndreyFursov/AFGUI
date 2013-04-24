@@ -30,12 +30,14 @@ typedef struct
 
 #define LCD                ((LCD_TypeDef *)LCD_BASE)
 
-#ifdef TNKERNEL_PORT_CORTEXM3
-#include "tn.h"
-#define delayms	tn_task_sleep
-#else
+// #ifdef TNKERNEL_PORT_CORTEXM3
+// #include "tn.h"
+// #define delayms	tn_task_sleep
+// #else
+// #define delayms	Delay_ms
+// #endif
+void  Delay_ms(uint32_t _time);
 #define delayms	Delay_ms
-#endif
 
 //********************************************************
 // Prototypes
@@ -84,15 +86,17 @@ void LCD_WriteReg(uint8_t LCD_Reg, uint16_t LCD_RegValue)
 
 uint16_t LCD_ReadReg(uint8_t LCD_Reg)
 {
+	volatile uint16_t i = 5;
   /* Write 16-bit Index (then Read Reg) */
-  LCD->LCD_REG = LCD_Reg;
-  /* Read 16-bit Reg */
-  return (LCD->LCD_RAM);
+	LCD->LCD_REG = LCD_Reg;
+	while(i--);
+	/* Read 16-bit Reg */
+	return (LCD->LCD_RAM);
 }
 
 void LCD_WriteRAM_Prepare(void)
 {
-  LCD->LCD_REG = 0x0022;
+  LCD->LCD_REG = 0x0022;;
 }
 
 void LCD_WriteRAM(uint16_t RGB_Code)
@@ -186,14 +190,20 @@ void LCD_FSMCConfig(void)
 	RCC_AHB3PeriphClockCmd(RCC_AHB3Periph_FSMC, ENABLE);
 
 	// FSMC_Bank1_NORSRAM1 configuration
-	p.FSMC_AddressSetupTime = 3;//-
-	p.FSMC_AddressHoldTime = 0;//
-	p.FSMC_DataSetupTime = 9;
-	p.FSMC_BusTurnAroundDuration = 0;
-	p.FSMC_CLKDivision = 1;
-	p.FSMC_DataLatency = 0;//-
+//	p.FSMC_AddressSetupTime = 3;//-
+//	p.FSMC_AddressHoldTime = 0;//
+//	p.FSMC_DataSetupTime = 9;
+//	p.FSMC_BusTurnAroundDuration = 0;
+//	p.FSMC_CLKDivision = 1;
+//	p.FSMC_DataLatency = 0;//-
+//	p.FSMC_AccessMode = FSMC_AccessMode_A;
+	p.FSMC_AddressSetupTime = 3;		// 0-15
+	p.FSMC_AddressHoldTime = 0;			// 1-15 na
+	p.FSMC_DataSetupTime = 9;			// 1-256
+	p.FSMC_BusTurnAroundDuration = 0;	// 0-15
+	p.FSMC_CLKDivision = 1;				// 1-16
+	p.FSMC_DataLatency = 0;				// 2-17 na
 	p.FSMC_AccessMode = FSMC_AccessMode_A;
-
 	// 	 Color LCD configuration ------------------------------------
 	// 		 LCD configured as follow:
 	// 				- Data/Address MUX = Disable
