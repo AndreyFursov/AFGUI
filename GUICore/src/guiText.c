@@ -13,6 +13,7 @@ void guiDrawString(char * text, V_FONT *font, uint16_t len, uint16_t Xpos, uint1
 	uint32_t i, index;
 	//pos = Xpos;
 	i = 0;
+	LCD_SetFont(font);
 	while (i < len
 			&& (uint8_t)text[i] > font->Offset)
 	{

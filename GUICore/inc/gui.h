@@ -45,7 +45,7 @@
 #include "guiTouchCalibration.h"
 
 // Default
-#define LCD_DEFAULT_FONT GL_ArialBold_16
+#define LCD_DEFAULT_FONT GL_ArialNarrow_15
 
 // Defines
 #define H_ALIGN_LEFT		0

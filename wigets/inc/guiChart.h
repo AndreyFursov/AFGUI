@@ -32,7 +32,7 @@ typedef struct
 extern void defaultChartInit(GUI_CHART * chart, uint16_t x, uint16_t y, uint16_t width, uint16_t height);
 extern void chartSetData(GUI_CHART * chart, int16_t * data, uint16_t numData);
 extern void guiChartDraw(GUI_CHART * chart);
-
+extern void guiChartRefresh(GUI_CHART * chart, uint16_t _color);
 
 
 #endif /* GUICHART_H_ */

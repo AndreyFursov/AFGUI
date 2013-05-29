@@ -62,7 +62,7 @@ void guiChartDraw(GUI_CHART * chart)
 		LCD_SetTextColor(chart->wmObj.BorderColor);
 
 		LCD_DrawLine(chart->wmObj.xPos, chart->wmObj.yPos, 						chart->wmObj.Height, 	LCD_DIR_VERTICAL);
-		LCD_DrawLine(chart->wmObj.xPos, chart->wmObj.yPos+chart->wmObj.Height-1, 	chart->wmObj.Width, 	LCD_DIR_HORIZONTAL);
+		LCD_DrawLine(chart->wmObj.xPos, chart->wmObj.yPos + chart->wmObj.Height-1, 	chart->wmObj.Width, 	LCD_DIR_HORIZONTAL);
 		LCD_SetTextColor(chart->wmObj.Color);
 		LCD_DrawFillRect(chart->wmObj.xPos+1, chart->wmObj.yPos, chart->wmObj.Width - 1, chart->wmObj.Height - 1);
 
@@ -70,9 +70,9 @@ void guiChartDraw(GUI_CHART * chart)
 
 		// Graph
 		LCD_SetTextColor(chart->LineColor);
-		for (i = 1; i <  chart->wmObj.Width-1; i++)
+		for (i = 0; i <  chart->wmObj.Width-1; i++)
 		{
-			if (chart->table[i] > chart->wmObj.Height-1) chart->table[i] = chart->wmObj.Height-1;
+			if (chart->table[i] > chart->wmObj.Height-1) chart->table[i] = chart->wmObj.Height-11;
 			if (chart->Dot_nLine)	// dot graph
 				LCD_PutPixel(chart->wmObj.xPos+1+i, chart->wmObj.yPos + chart->wmObj.Height - 1 - chart->table[i]);
 			else					// line graph (histogram)
@@ -84,3 +84,54 @@ void guiChartDraw(GUI_CHART * chart)
 	}
 }
 
+//void guiChartFastClear(GUI_CHART * chart)
+//{
+//	uint16_t i;
+//	//uint16_t  xGridSpace, yGridSpace;
+//
+//	if (chart->wmObj.Visible)
+//	{
+//		// Graph
+//		LCD_SetTextColor(chart->wmObj.Color);
+//		for (i = 0; i <  chart->wmObj.Width-1; i++)
+//		{
+//			if (chart->table[i] > chart->wmObj.Height-1) chart->table[i] = chart->wmObj.Height-1;
+//			if (chart->Dot_nLine)	// dot graph
+//				LCD_PutPixel(chart->wmObj.xPos+1+i, chart->wmObj.yPos + chart->wmObj.Height - 1 - chart->table[i]);
+//			else					// line graph (histogram)
+//				LCD_DrawLine(chart->wmObj.xPos+1+i,
+//							chart->wmObj.yPos + chart->wmObj.Height - 1 - chart->table[i],
+//							chart->table[i],
+//							LCD_DIR_VERTICAL);
+//		}
+//	}
+//}
+
+void guiChartRefresh(GUI_CHART * chart, uint16_t _color)
+{
+	uint16_t i;
+	//uint16_t  xGridSpace, yGridSpace;
+
+
+	if (chart->wmObj.Visible)
+	{
+		// axis
+		LCD_SetTextColor(chart->wmObj.BorderColor);
+		LCD_DrawLine(chart->wmObj.xPos, chart->wmObj.yPos, 						chart->wmObj.Height, 	LCD_DIR_VERTICAL);
+		LCD_DrawLine(chart->wmObj.xPos, chart->wmObj.yPos + chart->wmObj.Height-1, 	chart->wmObj.Width, 	LCD_DIR_HORIZONTAL);
+
+		// Graph
+		LCD_SetTextColor(_color);
+		for (i = 0; i <  chart->wmObj.Width-1; i++)
+		{
+			if (chart->table[i] > chart->wmObj.Height-1) chart->table[i] = chart->wmObj.Height-1;
+			if (chart->Dot_nLine)	// dot graph
+				LCD_PutPixel(chart->wmObj.xPos+1+i, chart->wmObj.yPos + (chart->wmObj.Height - 1) - chart->table[i]);
+			else					// line graph (histogram)
+				LCD_DrawLine(chart->wmObj.xPos+1+i,
+							chart->wmObj.yPos + chart->wmObj.Height - 1 - chart->table[i],
+							chart->table[i],
+							LCD_DIR_VERTICAL);
+		}
+	}
+}

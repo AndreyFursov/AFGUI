@@ -6,6 +6,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+uint8_t const eepromdata[PAGE_SIZE] __attribute__((at(EEPROM_START_ADDRESS)));
 
 uint16_t EE_ReadBuf(uint16_t EEAddress, uint16_t* _data, uint16_t len)
 {

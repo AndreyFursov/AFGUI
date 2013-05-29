@@ -7,6 +7,7 @@
 #include "gui.h"
 #include "ee_emul.h"
 
+int16_t x, y; 
 
 // variables
 uint16_t tcState = 0;
@@ -28,14 +29,23 @@ int16_t xPos[5], yPos[5], axc[2], ayc[2], bxc[2], byc[2];
 
 uint16_t touchCalibration(void)
 {
-	int16_t x, y; 
 	
-	static uint16_t flag;
+	static uint16_t flag, counter = 0;
+	
+	counter++;
+	if (counter > 6000)
+	{
+		touchSetCoef(11, -17, -15, 256);
+		tcState = 9;
+	}
+		
 	switch (tcState)
 	{
 		case 0:	// left top corner draw
 			LCD_Clear(LCD_COLOR_WHITE);
-			LCD_SetTextColor(LCD_COLOR_BLACK);
+			LCD_SetColors(LCD_COLOR_BLACK, LCD_COLOR_WHITE);
+			LCD_SetFont(&GL_ArialNarrow_15);
+			LCD_DrawString("Калибровка сенсорного экрана", 50, 50, 112);
 			LCD_DrawLine(10, 10+25, 50, LCD_DIR_HORIZONTAL);
 			LCD_DrawLine(10+25, 10, 50, LCD_DIR_VERTICAL);
 			flag = 0;
@@ -61,6 +71,8 @@ uint16_t touchCalibration(void)
 		case 2:	// right top corner draw
 			LCD_Clear(LCD_COLOR_WHITE);
 			LCD_SetTextColor(LCD_COLOR_BLACK);
+			LCD_SetFont(&GL_ArialNarrow_15);
+			LCD_DrawString("Калибровка сенсорного экрана", 50, 50, 112);
 			LCD_DrawLine(LCD_PIXEL_WIDTH-10-50, 10+25, 50, LCD_DIR_HORIZONTAL);
 			LCD_DrawLine(LCD_PIXEL_WIDTH-10-25, 10, 50, LCD_DIR_VERTICAL);
 			flag = 0;
@@ -86,6 +98,8 @@ uint16_t touchCalibration(void)
 		case 4:	// left down corner draw
 			LCD_Clear(LCD_COLOR_WHITE);
 			LCD_SetTextColor(LCD_COLOR_BLACK);
+			LCD_SetFont(&GL_ArialNarrow_15);
+			LCD_DrawString("Калибровка сенсорного экрана", 50, 50, 112);
 			LCD_DrawLine(10, LCD_PIXEL_HEIGHT-10-25, 50, LCD_DIR_HORIZONTAL);
 			LCD_DrawLine(10+25, LCD_PIXEL_HEIGHT-10-50, 50, LCD_DIR_VERTICAL);
 			flag = 0;
@@ -111,6 +125,8 @@ uint16_t touchCalibration(void)
 		case 6:	// right down corner draw
 			LCD_Clear(LCD_COLOR_WHITE);
 			LCD_SetTextColor(LCD_COLOR_BLACK);
+			LCD_SetFont(&GL_ArialNarrow_15);
+			LCD_DrawString("Калибровка сенсорного экрана", 50, 50, 112);
 			LCD_DrawLine(LCD_PIXEL_WIDTH-10-50, LCD_PIXEL_HEIGHT-10-25, 50, LCD_DIR_HORIZONTAL);
 			LCD_DrawLine(LCD_PIXEL_WIDTH-10-25, LCD_PIXEL_HEIGHT-10-50, 50, LCD_DIR_VERTICAL);
 			flag = 0;
@@ -171,11 +187,12 @@ void touchSaveCoef(int16_t _ax, int16_t _bx, int16_t _ay, int16_t _by)
 	buf[i++] = (uint16_t)_by;
 	
 	EE_WriteBuf(EE_ADR_COEF, buf, 4);
+	touchSetCoef(_ax, _bx, _ay, _by);
+	
 }
 
 void touchLoadCoef(void)
 {
-	uint16_t i = 0;
 	int16_t coef[4];
 	
 	EE_ReadBuf(EE_ADR_COEF, (uint16_t *)coef, 4);

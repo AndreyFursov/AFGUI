@@ -153,7 +153,8 @@ void LCD_SetPalette(void)
 
 uint16_t guiChangeColorLight(uint16_t color, uint16_t percent)
 {
-	uint32_t temp, outColor;
+	uint32_t outColor = 0;
+//	uint32_t temp;
 //	outColor = 0;
 //	temp = 0;
 //	if (percent > 99)

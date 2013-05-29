@@ -22,8 +22,8 @@ void defaultRadioGroupInit(GUI_RADIO_GROUP * radioGroup, uint16_t x, uint16_t y,
 	radioGroup->wmObj.BorderColor = LCD_COLOR_GREYD;
 	radioGroup->wmObj.BorderWidth = 1;
 
-	radioGroup->wmObj.Visible 	= 1;
-	radioGroup->wmObj.Enable 	= 1;
+	radioGroup->wmObj.Visible 	= 0;
+	radioGroup->wmObj.Enable 	= 0;
 };
 
 void defaultRadioGroupItemInit(GUI_RADIO_GROUP * radioGroup, uint8_t numItem, uint8_t itemSelected)

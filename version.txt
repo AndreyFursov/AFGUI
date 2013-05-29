@@ -85,9 +85,14 @@ ver 0.0.004
 - add touch screen calibration. coef's save in 16k flash memory sector
 - in tools add fork "TheDotFactory". modify: add cp-1251 in font and modified lookup table for ascii cp-1251.
 
-do it
-- add GUI_WINDOW object
-- add example
+ver 0.0.005
+- add example on TNKernel based
+- bug fixed
+- upDownBox modified inc and fastInc 
+- add driver for stm32f207z for lcd and ads7843
+- set default font GL_ArialNarrow_15
+- add min font file "guiFontMin.c"
+- add fast clear for guiChart
 
 */
 

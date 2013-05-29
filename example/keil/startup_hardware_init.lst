@@ -1,0 +1,151 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ;-------------------------------------------------------
+                       -----------------------
+    2 00000000         ;
+    3 00000000         ;    TNKernel startup hardware init for STM32F10X proces
+                       sors
+    4 00000000         ;    (for ARM(c) compiler)
+    5 00000000         ;
+    6 00000000         ;    ARM(c) assembler
+    7 00000000         ;
+    8 00000000         ; Copyright © 2004,2008 Yuri Tiomkin
+    9 00000000         ; All rights reserved.
+   10 00000000         ;
+   11 00000000         ;Permission to use, copy, modify, and distribute this so
+                       ftware in source
+   12 00000000         ;and binary forms and its documentation for any purpose 
+                       and without fee
+   13 00000000         ;is hereby granted, provided that the above copyright no
+                       tice appear
+   14 00000000         ;in all copies and that both that copyright notice and t
+                       his permission
+   15 00000000         ;notice appear in supporting documentation.
+   16 00000000         ;
+   17 00000000         ;THIS SOFTWARE IS PROVIDED BY THE YURI TIOMKIN AND CONTR
+                       IBUTORS ``AS IS'' AND
+   18 00000000         ;ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT L
+                       IMITED TO, THE
+   19 00000000         ;IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+                        PARTICULAR PURPOSE
+   20 00000000         ;ARE DISCLAIMED. IN NO EVENT SHALL YURI TIOMKIN OR CONTR
+                       IBUTORS BE LIABLE
+   21 00000000         ;FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLAR
+                       Y, OR CONSEQUENTIAL
+   22 00000000         ;DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+                       SUBSTITUTE GOODS
+   23 00000000         ;OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+                        INTERRUPTION)
+   24 00000000         ;HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
+                       IN CONTRACT, STRICT
+   25 00000000         ;LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+                       ARISING IN ANY WAY
+   26 00000000         ;OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+                        POSSIBILITY OF
+   27 00000000         ;SUCH DAMAGE.
+   28 00000000         
+   29 00000000         ;--  ver 2.5
+   30 00000000         
+   31 00000000         
+   32 00000000         ;-- Public functions declared in this file
+   33 00000000         
+   34 00000000                 EXPORT           tn_startup_hardware_init
+   35 00000000                 EXPORT           tn_arm_disable_interrupts
+   36 00000000                 EXPORT           tn_arm_enable_interrupts
+   37 00000000         
+   38 00000000         ;-- Extern reference
+   39 00000000         
+   40 00000000         ;-------------------------------------------------------
+                       ---------------------
+   41 00000000         
+   42 00000000                 AREA             HardwareInit, CODE, READONLY
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+   43 00000000                 THUMB
+   44 00000000         
+   45 00000000         ;-------------------------------------------------------
+                       ---------------------
+   46 00000000         ;  This routine is called immediately after reset to set
+                       up hardware that is
+   47 00000000         ; vital for processor's functionality (for instance,SDRA
+                       M controller setup,
+   48 00000000         ; PLL setup,etc.)
+   49 00000000         ;  It is assumed that other hardware's init routine(s) w
+                       ill be invoked later
+   50 00000000         ; by C-language function call.
+   51 00000000         ;-------------------------------------------------------
+                       ---------------------
+   52 00000000         tn_startup_hardware_init
+   53 00000000         
+   54 00000000         ;--- For STM32F10X - empy
+   55 00000000         
+   56 00000000 4770            bx               lr
+   57 00000002         
+   58 00000002         ;-------------------------------------------------------
+                       ---------------------
+   59 00000002         tn_arm_disable_interrupts
+   60 00000002         
+   61 00000002 B672            cpsid            I
+   62 00000004 4770            bx               lr
+   63 00000006         
+   64 00000006         
+   65 00000006         ;-------------------------------------------------------
+                       ---------------------
+   66 00000006         tn_arm_enable_interrupts
+   67 00000006         
+   68 00000006 B662            cpsie            I
+   69 00000008 4770            bx               lr
+   70 0000000A         
+   71 0000000A                 END
+Command Line: --debug --xref --cpu=Cortex-M3 --apcs=interwork --depend=.\out\st
+artup_hardware_init.d -o.\out\startup_hardware_init.o -IC:\Keil\ARM\RV31\INC -I
+C:\Keil\ARM\CMSIS\Include -IC:\Keil\ARM\Inc\ST\STM32F2xx --list=.\startup_hardw
+are_init.lst user\startup_hardware_init.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+HardwareInit 00000000
+
+Symbol: HardwareInit
+   Definitions
+      At line 42 in file user\startup_hardware_init.s
+   Uses
+      None
+Comment: HardwareInit unused
+tn_arm_disable_interrupts 00000002
+
+Symbol: tn_arm_disable_interrupts
+   Definitions
+      At line 59 in file user\startup_hardware_init.s
+   Uses
+      At line 35 in file user\startup_hardware_init.s
+Comment: tn_arm_disable_interrupts used once
+tn_arm_enable_interrupts 00000006
+
+Symbol: tn_arm_enable_interrupts
+   Definitions
+      At line 66 in file user\startup_hardware_init.s
+   Uses
+      At line 36 in file user\startup_hardware_init.s
+Comment: tn_arm_enable_interrupts used once
+tn_startup_hardware_init 00000000
+
+Symbol: tn_startup_hardware_init
+   Definitions
+      At line 52 in file user\startup_hardware_init.s
+   Uses
+      At line 34 in file user\startup_hardware_init.s
+Comment: tn_startup_hardware_init used once
+4 symbols
+334 symbols in table

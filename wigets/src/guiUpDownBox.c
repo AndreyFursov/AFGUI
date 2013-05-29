@@ -30,7 +30,7 @@ void defaultUpDownBoxInit(GUI_UPDOWN_BOX * udBox, uint16_t x, uint16_t y, uint16
 	if (udBox->wmLblHead.wmTxt.vFont == 0 || udBox->wmLblEdit.wmTxt.vFont == 0)
 	{
 		udBox->wmLblHead.wmTxt.vFont = &GL_ArialNarrow_15;
-		udBox->wmLblEdit.wmTxt.vFont = &GL_ArialNarrow_21;
+		udBox->wmLblEdit.wmTxt.vFont = &GL_ArialNarrow_15;
 	}
 
 	// upDownButtonInit
@@ -157,7 +157,7 @@ void UpDownTouchControl(GUI_UPDOWN_BOX * udBox, int16_t xTouch, int16_t yTouch)
 		if (udBox->btnUp.wmTouch.JustPressed)
 		{
 			udBox->btnUp.wmTouch.JustPressed = 0;
-			if (udBox->Value < udBox->ValueMax) udBox->Value++;
+			if (udBox->Value <= udBox->ValueMax - udBox->ValueInc) udBox->Value += udBox->ValueInc;
 			else
 				if (udBox->CycleUpDown) udBox->Value = udBox->ValueMin;
 			newData = 1;
@@ -166,7 +166,7 @@ void UpDownTouchControl(GUI_UPDOWN_BOX * udBox, int16_t xTouch, int16_t yTouch)
 
 	if (udBox->btnUp.wmTouch.Pressed  && udBox->btnUp.wmTouch.Hold)
 	{
-		if (udBox->Value < udBox->ValueMax) udBox->Value++;
+		if (udBox->Value <= udBox->ValueMax - udBox->ValueInc) udBox->Value += udBox->ValueInc;
 		else
 			if (udBox->CycleUpDown) udBox->Value = udBox->ValueMin;
 		newData = 1;
@@ -179,7 +179,7 @@ void UpDownTouchControl(GUI_UPDOWN_BOX * udBox, int16_t xTouch, int16_t yTouch)
 		if (udBox->btnDown.wmTouch.JustPressed)
 		{
 			udBox->btnDown.wmTouch.JustPressed = 0;
-			if (udBox->Value > udBox->ValueMin) udBox->Value--;
+			if (udBox->Value >= udBox->ValueMin + udBox->ValueInc) udBox->Value -= udBox->ValueInc;
 			else
 				if (udBox->CycleUpDown) udBox->Value = udBox->ValueMax;
 			newData = 1;
@@ -188,7 +188,7 @@ void UpDownTouchControl(GUI_UPDOWN_BOX * udBox, int16_t xTouch, int16_t yTouch)
 
 	if (udBox->btnDown.wmTouch.Pressed  && udBox->btnDown.wmTouch.Hold)
 	{
-		if (udBox->Value > udBox->ValueMin) udBox->Value--;
+		if (udBox->Value >= udBox->ValueMin + udBox->ValueInc) udBox->Value -= udBox->ValueInc;
 		else
 			if (udBox->CycleUpDown) udBox->Value = udBox->ValueMax;
 
