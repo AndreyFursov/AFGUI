@@ -51,8 +51,10 @@ void wmTextInit(WM_TEXT * wmText, char *text, V_FONT * vFont, uint8_t rot, uint8
 	wmText->TextRotate		= rot;
 	wmText->TextDirection	= DIR_LEFT_TO_RIGHT;
 	wmText->TextFlip		= flip;
-	wmText->TextLen = 0;
-	wmText->vFont = vFont;
+	wmText->TextLen 		= 0;
+	wmText->vFont 			= vFont;
+	wmText->TextUnderlined 	= 0;
+	wmText->TextCrossed		= 0;
 }
 
 
@@ -155,6 +157,31 @@ void wmGetTextPosition(WM_TEXT *wmText, uint16_t xPos, uint16_t yPos, uint16_t w
 		wmText->TextPosX = xPos + width - wmText->TextWidth;
 	}
 
+}
+
+void wmObjOnPaint(WM_OBJ * wmObj)
+{
+	if (wmObj->Visible && wmObj->Enable)
+	{
+		// Border
+		LCD_SetTextColor(wmObj->BorderColor);
+		// Top Border
+		LCD_DrawFillRect(wmObj->xPos, wmObj->yPos, wmObj->Width, wmObj->BorderWidth);
+		// Left Border
+		LCD_DrawFillRect(wmObj->xPos, wmObj->yPos, wmObj->BorderWidth, wmObj->Height);
+		// Bottom Border
+		LCD_DrawFillRect(wmObj->xPos, wmObj->yPos+wmObj->Height-wmObj->BorderWidth, wmObj->Width, wmObj->BorderWidth);
+		// Right Border
+		LCD_DrawFillRect(wmObj->xPos+wmObj->Width-wmObj->BorderWidth, wmObj->yPos, wmObj->BorderWidth, wmObj->Height);
+
+		// back
+		LCD_SetTextColor(wmObj->Color);
+		LCD_DrawFillRect(wmObj->xPos + wmObj->BorderWidth,
+						wmObj->yPos + wmObj->BorderWidth,
+						wmObj->Width - 2*wmObj->BorderWidth,
+						wmObj->Height - 2*wmObj->BorderWidth
+						);
+	}
 }
 
 void wmTouchInit( WM_TOUCH *wmTouch)

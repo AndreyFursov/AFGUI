@@ -43,6 +43,9 @@
 #include "guiUpDownBox.h"
 #include "guiRadioGroup.h"
 #include "guiTouchCalibration.h"
+#include "guiTerminalBlock.h"
+#include "guiKeyBoard.h"
+#include "guiEditBox.h"
 
 // Default
 #define LCD_DEFAULT_FONT GL_ArialNarrow_15

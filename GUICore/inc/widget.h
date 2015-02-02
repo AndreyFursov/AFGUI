@@ -47,6 +47,10 @@ typedef struct
 	unsigned	TextRotate		: 2;
 	unsigned	TextDirection	: 1;
 	unsigned	TextFlip		: 1;
+
+	unsigned 	TextUnderlined	: 1;
+	unsigned 	TextCrossed		: 1;
+
 //	unsigned	TextTransparent	: 1;
 
 } WM_TEXT;
@@ -68,12 +72,19 @@ typedef struct
 
 } WM_TOUCH;
 
+typedef struct
+{
+	void * pObjInFocus;
+
+} WM_GUI;
+
 extern void wmObjInit(WM_OBJ * wm, uint16_t x, uint16_t y, uint16_t width, uint16_t height);
 extern void wmTextInit(WM_TEXT * wmText, char *text, V_FONT * vFont, uint8_t rot, uint8_t flip, uint8_t align_h, uint8_t align_v);
 extern void wmTextPositionInit(WM_TEXT *wmText, uint16_t xPos, uint16_t yPos, uint16_t width, uint16_t height);
 extern void wmTouchControl(WM_OBJ *wmObj, WM_TOUCH *wmTouch, uint16_t x, uint16_t y);
 extern void wmObjTextInit(WM_OBJ *wmObj,  WM_TEXT * wmText);
 extern void wmTouchInit( WM_TOUCH *wmTouch);
+extern void wmObjOnPaint(WM_OBJ * wmObj);
 //extern void defaultWmTextInit(WM_OBJ * wm, uint8_t *text, V_FONT * vFont, uint8_t rot, uint8_t flip, uint8_t align_h, uint8_t align_v)
 
 #endif /* WIDGET_H_ */

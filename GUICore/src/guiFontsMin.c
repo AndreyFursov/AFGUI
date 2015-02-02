@@ -15,6 +15,27 @@
 #include "..\inc\font_tables\Arial_12.h"
 //#include "..\inc\font_tables\Calibri_10.h"
 //#include "..\inc\font_tables\LucidaConsolas_8.h"
+#include "..\inc\font_tables\fwLucida_12.h"
+
+
+V_FONT GS_Lucida_12 =
+	{
+		fwLucida_12_SymbolTable,
+		8, 			// Width
+		9, 			// Height
+		0, // *tableSymbWidth;
+		fwLucida_12_OffsetTable, // *tableSymbOffset;
+		32, 		// Offset;
+		224,			// NumSymb;
+		0				// Symbol Space
+	};
+
+//S_FONT GS_Lucida_12 =
+//{
+//	fwLucida_12_SymbolTable,
+//	10,
+//	12
+//};
 
 //V_FONT GL_ArialBold_64 =
 //	{

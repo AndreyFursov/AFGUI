@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfOutputConfiguration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <OutputConfiguration>
+    <commentVariableName>true</commentVariableName>
+    <commentCharVisualizer>false</commentCharVisualizer>
+    <commentCharDescriptor>true</commentCharDescriptor>
+    <commentStyle>C</commentStyle>
+    <bmpVisualizerChar>#</bmpVisualizerChar>
+    <rotation>RotateZero</rotation>
+    <flipHorizontal>false</flipHorizontal>
+    <flipVertical>false</flipVertical>
+    <paddingRemovalHorizontal>Fixed</paddingRemovalHorizontal>
+    <paddingRemovalVertical>Fixed</paddingRemovalVertical>
+    <lineWrap>AtBitmap</lineWrap>
+    <bitLayout>ColumnMajor</bitLayout>
+    <byteOrder>MsbFirst</byteOrder>
+    <byteFormat>Hex</byteFormat>
+    <byteLeadingString>0x</byteLeadingString>
+    <generateLookupArray>false</generateLookupArray>
+    <descCharWidth>DisplayInBits</descCharWidth>
+    <descCharHeight>DisplayInBits</descCharHeight>
+    <descFontHeight>DisplayInBits</descFontHeight>
+    <generateLookupBlocks>false</generateLookupBlocks>
+    <lookupBlocksNewAfterCharCount>80</lookupBlocksNewAfterCharCount>
+    <descImgWidth>DisplayInBytes</descImgWidth>
+    <descImgHeight>DisplayInBits</descImgHeight>
+    <generateSpaceCharacterBitmap>false</generateSpaceCharacterBitmap>
+    <spaceGenerationPixels>2</spaceGenerationPixels>
+    <varNfBitmaps>const uint_8 {0}Bitmaps</varNfBitmaps>
+    <varNfCharInfo>const FONT_CHAR_INFO {0}Descriptors</varNfCharInfo>
+    <varNfFontInfo>const FONT_INFO {0}FontInfo</varNfFontInfo>
+    <varNfWidth>const uint_8 {0}Width</varNfWidth>
+    <varNfHeight>const uint_8 {0}Height</varNfHeight>
+    <displayName>momo8</displayName>
+  </OutputConfiguration>
+</ArrayOfOutputConfiguration>

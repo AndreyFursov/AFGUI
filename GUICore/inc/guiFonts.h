@@ -10,7 +10,7 @@
 
 typedef struct
 {
-	const uint16_t * table;
+	const uint8_t * table;
 	uint16_t Width;
 	uint16_t Height;
 } S_FONT;
@@ -39,5 +39,7 @@ extern V_FONT GL_Arial_12;
 extern V_FONT GL_Arial_11;
 extern V_FONT GL_Lucida_8;
 extern V_FONT GL_Calibri_10;
+
+extern V_FONT GS_Lucida_12;
 
 #endif /* GUIFONTS_H_ */

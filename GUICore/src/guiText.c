@@ -5,6 +5,9 @@
  *      Author: Andrey
  */
 #include "gui.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 
 
 
@@ -15,7 +18,7 @@ void guiDrawString(char * text, V_FONT *font, uint16_t len, uint16_t Xpos, uint1
 	i = 0;
 	LCD_SetFont(font);
 	while (i < len
-			&& (uint8_t)text[i] > font->Offset)
+			&& (uint8_t)text[i] >= font->Offset)
 	{
 		index = (uint8_t)text[i] - font->Offset;
 		if (index > font->NumSymb) index = 0x3F-32;
@@ -27,6 +30,8 @@ void guiDrawString(char * text, V_FONT *font, uint16_t len, uint16_t Xpos, uint1
 		i++;
 	}
 }
+
+
 
 uint32_t uint8toString(char * str, uint8_t value, uint16_t len, uint8_t format)
 {
@@ -170,6 +175,62 @@ void LCD_ASCII(V_FONT * vFont)
 			}
 		}
 	}
+}
+
+// преобразование переменной с плав. запятой в строку
+uint32_t floatToString(char * str, float value, uint16_t len, uint8_t format)
+{
+	int ipart;
+	float fpart;
+	
+	uint32_t temp, index;
+
+	// extract integer part
+	ipart = (int)value;
+	
+	// extract floating part
+	fpart = value - (float)ipart;
+	
+	// convert integer part
+	index = int32toString(str, ipart, len, 1);
+	if (index < len-1) str[index++] = '.';
+	
+	// остаток на плавающую часть
+	if (format >= len - index - 1)
+	{
+		format = len - index - 1;
+	}
+	
+	// формируем плавающую часть
+	// определяем количество знаков
+	// если целая часть больше 999, то один знак после запятой
+	if (index > 4) format = 1;
+
+	// по необходимости увеличиваем плавающую часть
+	ipart = 0;
+	temp = 0;
+	while (temp < format || (temp < (len - index) && ipart == 0))
+	{
+		fpart *= 10;
+		ipart = (int)fpart;
+		temp++;
+	}
+	format = temp;
+
+	index += int32toString(&str[index], ipart, format+1, 0);
+	
+	// 0-терминатор строки
+	if (index < len-1 && str[index] != 0) str[index++] = 0;
+	
+	return index;
+}
+
+float strToFloat(char * str, int len)
+{
+	float value = 0;
+	value = atof(str);
+	
+	return value;
 }
 
 uint32_t uint32toTime(char * str, uint32_t value, uint16_t len, uint8_t format)

@@ -70,6 +70,7 @@
             this.txtLookupBlocksNewAfterCharCount = new System.Windows.Forms.TextBox();
             this.label21 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
+            this.cbxWidthTable = new System.Windows.Forms.CheckBox();
             this.cbxGenerateLookupBlocks = new System.Windows.Forms.CheckBox();
             this.label14 = new System.Windows.Forms.Label();
             this.cbxGenerateLookupArray = new System.Windows.Forms.CheckBox();
@@ -97,7 +98,8 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.cbxWidthTable = new System.Windows.Forms.CheckBox();
+            this.textBoxFixedHeight = new System.Windows.Forms.TextBox();
+            this.textBoxFixedWidth = new System.Windows.Forms.TextBox();
             this.groupBox3.SuspendLayout();
             this.gbxPadding.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -219,6 +221,8 @@
             this.gbxPadding.Controls.Add(this.label17);
             this.gbxPadding.Controls.Add(this.cbxPaddingHoriz);
             this.gbxPadding.Controls.Add(this.label16);
+            this.gbxPadding.Controls.Add(this.textBoxFixedWidth);
+            this.gbxPadding.Controls.Add(this.textBoxFixedHeight);
             this.gbxPadding.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gbxPadding.Location = new System.Drawing.Point(125, 58);
             this.gbxPadding.Name = "gbxPadding";
@@ -235,7 +239,7 @@
             this.cbxPaddingVert.FormattingEnabled = true;
             this.cbxPaddingVert.Location = new System.Drawing.Point(73, 54);
             this.cbxPaddingVert.Name = "cbxPaddingVert";
-            this.cbxPaddingVert.Size = new System.Drawing.Size(103, 21);
+            this.cbxPaddingVert.Size = new System.Drawing.Size(74, 21);
             this.cbxPaddingVert.TabIndex = 24;
             this.cbxPaddingVert.SelectedIndexChanged += new System.EventHandler(this.onOutputConfigurationFormChange);
             // 
@@ -257,7 +261,7 @@
             this.cbxPaddingHoriz.FormattingEnabled = true;
             this.cbxPaddingHoriz.Location = new System.Drawing.Point(73, 28);
             this.cbxPaddingHoriz.Name = "cbxPaddingHoriz";
-            this.cbxPaddingHoriz.Size = new System.Drawing.Size(103, 21);
+            this.cbxPaddingHoriz.Size = new System.Drawing.Size(74, 21);
             this.cbxPaddingHoriz.TabIndex = 22;
             this.cbxPaddingHoriz.SelectedIndexChanged += new System.EventHandler(this.onOutputConfigurationFormChange);
             // 
@@ -600,6 +604,18 @@
             this.label13.TabIndex = 59;
             this.label13.Text = "Create new descriptor array when space";
             // 
+            // cbxWidthTable
+            // 
+            this.cbxWidthTable.AutoSize = true;
+            this.cbxWidthTable.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cbxWidthTable.Location = new System.Drawing.Point(20, 141);
+            this.cbxWidthTable.Name = "cbxWidthTable";
+            this.cbxWidthTable.Size = new System.Drawing.Size(131, 17);
+            this.cbxWidthTable.TabIndex = 53;
+            this.cbxWidthTable.Text = "Generate Width Table";
+            this.cbxWidthTable.UseVisualStyleBackColor = true;
+            this.cbxWidthTable.CheckedChanged += new System.EventHandler(this.onOutputConfigurationFormChange);
+            // 
             // cbxGenerateLookupBlocks
             // 
             this.cbxGenerateLookupBlocks.AutoSize = true;
@@ -894,17 +910,27 @@
             this.label9.TabIndex = 43;
             this.label9.Text = "Bitmaps:";
             // 
-            // cbxWidthTable
+            // textBoxFixedHeight
             // 
-            this.cbxWidthTable.AutoSize = true;
-            this.cbxWidthTable.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cbxWidthTable.Location = new System.Drawing.Point(20, 141);
-            this.cbxWidthTable.Name = "cbxWidthTable";
-            this.cbxWidthTable.Size = new System.Drawing.Size(131, 17);
-            this.cbxWidthTable.TabIndex = 53;
-            this.cbxWidthTable.Text = "Generate Width Table";
-            this.cbxWidthTable.UseVisualStyleBackColor = true;
-            this.cbxWidthTable.CheckedChanged += new System.EventHandler(this.onOutputConfigurationFormChange);
+            this.textBoxFixedHeight.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxFixedHeight.Location = new System.Drawing.Point(158, 28);
+            this.textBoxFixedHeight.Name = "textBoxFixedHeight";
+            this.textBoxFixedHeight.Size = new System.Drawing.Size(30, 21);
+            this.textBoxFixedHeight.TabIndex = 58;
+            this.textBoxFixedHeight.Text = "8";
+            this.textBoxFixedHeight.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBoxFixedHeight.TextChanged += new System.EventHandler(this.onOutputConfigurationFormChange);
+            // 
+            // textBoxFixedWidth
+            // 
+            this.textBoxFixedWidth.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxFixedWidth.Location = new System.Drawing.Point(158, 57);
+            this.textBoxFixedWidth.Name = "textBoxFixedWidth";
+            this.textBoxFixedWidth.Size = new System.Drawing.Size(30, 21);
+            this.textBoxFixedWidth.TabIndex = 58;
+            this.textBoxFixedWidth.Text = "6";
+            this.textBoxFixedWidth.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBoxFixedWidth.TextChanged += new System.EventHandler(this.onOutputConfigurationFormChange);
             // 
             // OutputConfigurationForm
             // 
@@ -1023,5 +1049,7 @@
 		private System.Windows.Forms.Label label24;
 		private System.Windows.Forms.ComboBox cbxBitLayout;
         private System.Windows.Forms.CheckBox cbxWidthTable;
+        private System.Windows.Forms.TextBox textBoxFixedWidth;
+        private System.Windows.Forms.TextBox textBoxFixedHeight;
     }
 }

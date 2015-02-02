@@ -10,6 +10,7 @@
 #include "gui.h"
 #include "lcdHAL_ILI9320.h"
 #include "lcdHAL_HX8347A.h"
+#include "lcdHAL_SSD1298.h"
 
 //********************************************************
 // Prototypes
@@ -127,6 +128,18 @@ void LCD_Init(void)
     	fpLCD_WriteBMP 		= &LCD_WriteBMP_HX8347A;
     	LCD_SetColorGRAM(lcdColorRGB_666);
     	LCD_Init_HX8347A();
+    }
+	
+    if (lcdid == 0x8999)	// SSD1298
+    {
+    	fpLCD_SetWindow		= &LCD_SetWindow_SSD1298;
+    	fpLCD_PutPixel 		= &LCD_PutPixel_SSD1298;
+    	fpLCD_DrawChar 		= &LCD_DrawChar_SSD1298;
+    	fpLCD_DrawFillRect 	= &LCD_DrawFillRect_SSD1298;
+    	fpLCD_DrawMonoPict 	= &LCD_DrawMonoPict_SSD1298;
+    	fpLCD_WriteBMP 		= &LCD_WriteBMP_SSD1298;
+    	LCD_SetColorGRAM(lcdColorRGB_565);
+    	LCD_Init_SSD1298();
     }
 
     // displwy clear

@@ -5,6 +5,8 @@
  *      Author: Andrey
  */
 
+// 2013.11.18 - add 3D control for border visualisation
+
 #include "gui.h"
 
 void defaultTextButtonInit(TEXT_BUTTON * button, uint16_t x, uint16_t y, uint16_t width, uint16_t height)
@@ -22,6 +24,7 @@ void defaultTextButtonInit(TEXT_BUTTON * button, uint16_t x, uint16_t y, uint16_
 	button->wmObj.BorderColor 	= LCD_COLOR_GREYL;
 	button->wmObj.BorderWidth	= 1;
 
+	button->wmObj.Visual3D		= 1;
 	button->wmObj.Visible 		= 0;
 	button->wmObj.Enable 		= 0;
 
@@ -87,12 +90,14 @@ void TextButtonTouchControl(TEXT_BUTTON * button,  int16_t xTouch, int16_t yTouc
 		if (button->fOnTouch && button->wmTouch.JustPressed)
 		{
 			button->wmTouch.JustPressed = 0;
-			button->fOnTouch();
+			if (button->fOnTouch)
+				button->fOnTouch();
 		}
 		if (button->fOnUntouch && button->wmTouch.JustReleased)
 		{
 			button->wmTouch.JustReleased = 0;
-			button->fOnUntouch();
+			if (button->fOnUntouch)
+				button->fOnUntouch();
 		}
 	}
 
@@ -102,25 +107,63 @@ void TextButtonTouchControl(TEXT_BUTTON * button,  int16_t xTouch, int16_t yTouc
 	}
 }
 
+int STextButtonTouchControl(STEXT_BUTTON * sBtn,  int16_t xTouch, int16_t yTouch)
+{
+	wmTouchControl(&sBtn->btn.wmObj, &sBtn->btn.wmTouch, xTouch, yTouch);
+
+	if (sBtn->btn.wmTouch.Changed)
+	{
+		sBtn->btn.wmTouch.Changed = 0;
+		TextButtonStateRefresh(&sBtn->btn);
+
+		if (sBtn->btn.fOnTouch && sBtn->btn.wmTouch.JustPressed)
+		{
+			sBtn->btn.wmTouch.JustPressed = 0;
+			if (sBtn->btn.fOnTouch)
+				sBtn->btn.fOnTouch(sBtn);
+		}
+		if (sBtn->btn.fOnUntouch && sBtn->btn.wmTouch.JustReleased)
+		{
+			sBtn->btn.wmTouch.JustReleased = 0;
+			if (sBtn->btn.fOnUntouch)
+				sBtn->btn.fOnUntouch(sBtn);
+		}
+	}
+
+	if (sBtn->btn.fOnTouch && sBtn->btn.wmTouch.Pressed  && sBtn->btn.wmTouch.Hold)
+	{
+		sBtn->btn.fOnTouch();
+	}
+}
+
+
 void TextButtonStateRefresh(TEXT_BUTTON * button)
 {
 	uint16_t  colorTL, colorBR;
 
 	if (button->wmObj.Visible)
 	{
-		if (button->wmTouch.Pressed)
+		if (button->wmObj.Visual3D)
 		{
-//			colorBR = guiChangeColorLight(button->wmObj.Color, 150);
-//			colorTL = guiChangeColorLight(button->wmObj.Color, 50);
-			colorBR = LCD_COLOR_WHITE;
-			colorTL = LCD_COLOR_GREYD;
+			if (button->wmTouch.Pressed)
+			{
+	//			colorBR = guiChangeColorLight(button->wmObj.Color, 150);
+	//			colorTL = guiChangeColorLight(button->wmObj.Color, 50);
+				colorBR = LCD_COLOR_WHITE;
+				colorTL = LCD_COLOR_GREYD;
+			}
+			else
+			{
+	//			colorTL = guiChangeColorLight(button->wmObj.Color, 150);
+	//			colorBR = guiChangeColorLight(button->wmObj.Color, 50);
+				colorTL = LCD_COLOR_WHITE;
+				colorBR = LCD_COLOR_GREYD;
+			}
 		}
 		else
 		{
-//			colorTL = guiChangeColorLight(button->wmObj.Color, 150);
-//			colorBR = guiChangeColorLight(button->wmObj.Color, 50);
-			colorTL = LCD_COLOR_WHITE;
-			colorBR = LCD_COLOR_GREYD;
+			colorTL = button->wmObj.BorderColor;
+			colorBR = button->wmObj.BorderColor;
 		}
 
 		// Bot-Right Dark Border

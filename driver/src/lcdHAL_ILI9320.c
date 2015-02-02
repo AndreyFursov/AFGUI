@@ -70,7 +70,7 @@ void LCD_DrawChar_ILI9320(uint16_t Xpos, uint16_t Ypos, uint16_t codeChar)
 	if (LCD_Currentfonts->Width)
 	{
 		width = LCD_Currentfonts->Width;
-		LCD_SetWindow(Xpos, Ypos, Xpos+width, Ypos+LCD_Currentfonts->Height-1);
+		LCD_SetWindow(Xpos, Ypos, Xpos+width-1, Ypos+LCD_Currentfonts->Height-1);
 	}
 	else
 	{

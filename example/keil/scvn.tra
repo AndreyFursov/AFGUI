@@ -1,0 +1,77 @@
+*** Creating Trace Output File 'scvn.tra' Ok.
+### Preparing for ADS-LD.
+### Creating ADS-LD Command Line
+### List of Objects: adding '"tn.o"'
+### List of Objects: adding '"tn_dqueue.o"'
+### List of Objects: adding '"tn_event.o"'
+### List of Objects: adding '"tn_mem.o"'
+### List of Objects: adding '"tn_mutex.o"'
+### List of Objects: adding '"tn_sem.o"'
+### List of Objects: adding '"tn_tasks.o"'
+### List of Objects: adding '"tn_utils.o"'
+### List of Objects: adding '"tn_port_cm3.o"'
+### List of Objects: adding '"tn_port_cm3_armcc.o"'
+### List of Objects: adding '"misc.o"'
+### List of Objects: adding '"stm32f2xx_dma.o"'
+### List of Objects: adding '"stm32f2xx_flash.o"'
+### List of Objects: adding '"stm32f2xx_fsmc.o"'
+### List of Objects: adding '"stm32f2xx_gpio.o"'
+### List of Objects: adding '"stm32f2xx_iwdg.o"'
+### List of Objects: adding '"stm32f2xx_rcc.o"'
+### List of Objects: adding '"stm32f2xx_syscfg.o"'
+### List of Objects: adding '"stm32f2xx_tim.o"'
+### List of Objects: adding '"stm32f2xx_usart.o"'
+### List of Objects: adding '"stm32f2xx_rtc.o"'
+### List of Objects: adding '"stm32f2xx_adc.o"'
+### List of Objects: adding '"stm32f2xx_dac.o"'
+### List of Objects: adding '"stm32f2xx_dbgmcu.o"'
+### List of Objects: adding '"stm32f2xx_i2c.o"'
+### List of Objects: adding '"stm32f2xx_pwr.o"'
+### List of Objects: adding '"stm32f2xx_spi.o"'
+### List of Objects: adding '"core_cm3.o"'
+### List of Objects: adding '"system_stm32f2xx.o"'
+### List of Objects: adding '"startup_stm32f2xx.o"'
+### List of Objects: adding '"mkdriver.o"'
+### List of Objects: adding '"lcdhal_universal.o"'
+### List of Objects: adding '"lcdhal_ili9320.o"'
+### List of Objects: adding '"lcdhal_hx8347a.o"'
+### List of Objects: adding '"ee_emul.o"'
+### List of Objects: adding '"ads7843.o"'
+### List of Objects: adding '"guicolor.o"'
+### List of Objects: adding '"guifonts.o"'
+### List of Objects: adding '"guiprimitives.o"'
+### List of Objects: adding '"guitext.o"'
+### List of Objects: adding '"widget.o"'
+### List of Objects: adding '"aftime.o"'
+### List of Objects: adding '"guichart.o"'
+### List of Objects: adding '"guicheckbox.o"'
+### List of Objects: adding '"guilabel.o"'
+### List of Objects: adding '"guiradiogroup.o"'
+### List of Objects: adding '"guitextbutton.o"'
+### List of Objects: adding '"guitouchcalibration.o"'
+### List of Objects: adding '"guiupdownbox.o"'
+### List of Objects: adding '"beeper.o"'
+### List of Objects: adding '"startup_hardware_init.o"'
+### List of Objects: adding '"main.o"'
+### List of Objects: adding '"tn_user.o"'
+### List of Objects: adding '"crcm.o"'
+### List of Objects: adding '"button.o"'
+### List of Objects: adding '"at26df.o"'
+### List of Objects: adding '"uartdrv.o"'
+### List of Objects: adding '"tn_task_usart.o"'
+### ADS-LD Command completed:
+--cpu Cortex-M3 "tn.o" "tn_dqueue.o" "tn_event.o" "tn_mem.o" "tn_mutex.o" "tn_sem.o" "tn_tasks.o" "tn_utils.o" "tn_port_cm3.o" "tn_port_cm3_armcc.o" "misc.o" "stm32f2xx_dma.o" "stm32f2xx_flash.o" "stm32f2xx_fsmc.o" "stm32f2xx_gpio.o" "stm32f2xx_iwdg.o" "stm32f2xx_rcc.o" "stm32f2xx_syscfg.o" "stm32f2xx_tim.o" "stm32f2xx_usart.o" "stm32f2xx_rtc.o" "stm32f2xx_adc.o" "stm32f2xx_dac.o" "stm32f2xx_dbgmcu.o" "stm32f2xx_i2c.o" "stm32f2xx_pwr.o" "stm32f2xx_spi.o" "core_cm3.o" "system_stm32f2xx.o" "startup_stm32f2xx.o" "mkdriver.o" "lcdhal_universal.o" "lcdhal_ili9320.o" "lcdhal_hx8347a.o" "ee_emul.o" "ads7843.o" "guicolor.o" "guifonts.o" "guiprimitives.o" "guitext.o" "widget.o" "aftime.o" "guichart.o" "guicheckbox.o" "guilabel.o" "guiradiogroup.o" "guitextbutton.o" "guitouchcalibration.o" "guiupdownbox.o" "beeper.o" "startup_hardware_init.o" "main.o" "tn_user.o" "crcm.o" "button.o" "at26df.o" "uartdrv.o" "tn_task_usart.o" 
+--strict --scatter "scvn.sct" 
+--summary_stderr --info summarysizes --map --xref --callgraph --symbols 
+--info sizes --info totals --info unused --info veneers 
+ --list ".\scvn.map" -o scvn.axf### Preparing Environment (PrepEnvAds)
+### ADS-LD Output File: 'scvn.axf'
+### ADS-LD Command File: 'scvn.lnp'
+### Checking for dirty Components...
+### Creating CmdFile 'scvn.lnp', Handle=0x000022CC
+### Writing '.lnp' file
+### ADS-LD Command file 'scvn.lnp' is ready.
+### ADS-LD: About to start ADS-LD Thread.
+### ADS-LD: executed with 0 errors
+### Updating obj list
+### LDADS_file() completed.

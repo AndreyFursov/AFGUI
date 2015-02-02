@@ -16,3 +16,15 @@ C:\work\eclipse\AFGUI\AFGUI\tools\TheDotFactory\TheDotFactory\obj\Debug\TheDotFa
 C:\work\eclipse\AFGUI\AFGUI\tools\TheDotFactory\bin\Debug\TheDotFactory.exe.config
 C:\work\eclipse\AFGUI\AFGUI\tools\TheDotFactory\obj\Debug\TheDotFactory.exe
 C:\work\eclipse\AFGUI\AFGUI\tools\TheDotFactory\obj\Debug\TheDotFactory.pdb
+E:\work\eclipse\AFGUI\AFGUI\tools\TheDotFactory\bin\Debug\TheDotFactory.exe.config
+E:\work\eclipse\AFGUI\AFGUI\tools\TheDotFactory\obj\Debug\TheDotFactory.exe
+E:\work\eclipse\AFGUI\AFGUI\tools\TheDotFactory\obj\Debug\TheDotFactory.pdb
+E:\work\eclipse\AFGUI\AFGUI\tools\TheDotFactory\bin\Debug\TheDotFactory.exe
+E:\work\eclipse\AFGUI\AFGUI\tools\TheDotFactory\bin\Debug\TheDotFactory.pdb
+E:\work\eclipse\AFGUI\AFGUI\tools\TheDotFactory\obj\Debug\TheDotFactory.csprojResolveAssemblyReference.cache
+E:\work\eclipse\AFGUI\AFGUI\tools\TheDotFactory\obj\Debug\TheDotFactory.AboutForm.resources
+E:\work\eclipse\AFGUI\AFGUI\tools\TheDotFactory\obj\Debug\TheDotFactory.InputBoxDialog.resources
+E:\work\eclipse\AFGUI\AFGUI\tools\TheDotFactory\obj\Debug\TheDotFactory.MainForm.resources
+E:\work\eclipse\AFGUI\AFGUI\tools\TheDotFactory\obj\Debug\TheDotFactory.OutputConfigurationForm.resources
+E:\work\eclipse\AFGUI\AFGUI\tools\TheDotFactory\obj\Debug\TheDotFactory.Properties.Resources.resources
+E:\work\eclipse\AFGUI\AFGUI\tools\TheDotFactory\obj\Debug\TheDotFactory.csproj.GenerateResource.Cache
