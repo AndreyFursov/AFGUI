@@ -7,6 +7,14 @@
 
 #include "gui.h"
 
+/*!
+Инициализация диаграммы по умолчанию
+\param[out] *chart Указатель на объект диаграммы
+\param[in] x координата по оси x
+\param[in] y координата по оси y
+\param[in] width ширина виджета
+\param[in] height высота виджета
+*/
 void defaultChartInit(GUI_CHART * chart, uint16_t x, uint16_t y, uint16_t width, uint16_t height)
 {
 
@@ -28,6 +36,12 @@ void defaultChartInit(GUI_CHART * chart, uint16_t x, uint16_t y, uint16_t width,
 	chart->wmObj.Enable 		= 0;
 }
 
+/*!
+Установка массива значений для диаграммы
+\param[out] *chart Указатель на объект диаграммы
+\param[in] *data Указатель на массив значений (int16_t)
+\param[in] numData Количество значений в массиве
+*/
 void chartSetData(GUI_CHART * chart, int16_t * data, uint16_t numData)
 {
 	uint16_t i, point;
@@ -51,6 +65,10 @@ void chartSetData(GUI_CHART * chart, int16_t * data, uint16_t numData)
 }
 
 
+/*!
+Вывод диаграммы на экран
+\param[in] *chart Указатель на объект диаграммы
+*/
 void guiChartDraw(GUI_CHART * chart)
 {
 	uint16_t i;
@@ -107,6 +125,11 @@ void guiChartDraw(GUI_CHART * chart)
 //	}
 //}
 
+/*!
+Обновление диаграммы
+\param[in] *chart Указатель на объект диаграммы
+\param[in] _color цвет линий данных
+*/
 void guiChartRefresh(GUI_CHART * chart, uint16_t _color)
 {
 	uint16_t i;
